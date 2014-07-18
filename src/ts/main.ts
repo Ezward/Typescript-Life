@@ -5,14 +5,16 @@
 
 function main()
 {
+    'use strict';
+    
 	//
-	// get our canvas
+	// get our canvas, synchronize the css size and the canvas coordinate system.
 	//
 	var theStage: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("stage-canvas");
     theStage.width = theStage.clientWidth;
     theStage.height = theStage.clientHeight;
     
-    var theMagnification: number = 3;
+    var theMagnification: number = 2;
     var theRows: number = (theStage.height / theMagnification) | 0;
     var theColumns: number = (theStage.width / theMagnification) | 0;
 
@@ -31,7 +33,7 @@ function main()
     //
     // create random pattern
     //
-    for(var i = 0; i < 6000; i += 1)
+    for(var i = 0; i < 16000; i += 1)
     {
         thePopulation.makeAliveXY((Math.random() * theColumns) | 0, (Math.random() * theRows) | 0);
     }

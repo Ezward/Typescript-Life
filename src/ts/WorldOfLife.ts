@@ -1,4 +1,5 @@
 /// <reference path="Arrays.ts" />
+
 /**
  * Conway 2d world.
  * The world has all the Individuals and their state,
@@ -6,6 +7,8 @@
  */
 module WorldOfLife
 {
+    'use strict';
+
     export interface Renderer
     {
         /**
@@ -40,7 +43,6 @@ module WorldOfLife
 		private _column : number;
 		private _id: string;
 		private _neighbors : Individual[] = [];
-		private _aliveNeighbors: Individual[] = [];
 	
 		public constructor(id: string, row : number, column : number)
 		{
@@ -75,7 +77,7 @@ module WorldOfLife
 	{
 		private _rows: number;
 		private _columns : number;
-		private _world;
+		private _world: Individual[][];
 	
         /**
          * @param rows horizontal size of world
@@ -83,6 +85,8 @@ module WorldOfLife
          */
         constructor(rows : number, columns : number)
 		{
+            if((rows <= 0) || (columns <= 0)) throw "World.constructor() was passed non-positive dimensions."
+            
 			//
 			// create the map
 			//
@@ -172,11 +176,11 @@ module WorldOfLife
 	export class Population
 	{
         private _world: World;
-		private _wasAlive: {};				// individuals alive in the previous generation
-		private _isAlive = {};				// individuals alive in the current generation
-        private _touched = {};              // individuals that need to be drawn in this generation
-        private _toRender = {};             // individuals that need to be rendered (erased or drawn)
-        private _neighborCount = {};        // living neighbor count for individuals.
+		private _wasAlive: {[id: string]: Individual};      // individuals alive in the previous generation
+		private _isAlive: {[id: string]: Individual};       // individuals alive in the current generation
+        private _touched: {[id: string]: Individual};       // individuals that need to be drawn in this generation
+        private _toRender: {[id: string]: Individual};      // individuals that need to be rendered (erased or drawn)
+        private _neighborCount: {[id: string]: number};     // living neighbor count for individuals.
         
         /**
          * Construct a Population for a World.  
@@ -201,6 +205,7 @@ module WorldOfLife
          * @param x the horizontal position of individual in the world
          * @param y the vertical position of individual in the world
          * @return true if alive in this generation
+         * @throws if the row or column is out of range.
          */
         public isAliveXY(x: number, y: number): boolean
         {
@@ -219,6 +224,7 @@ module WorldOfLife
          * @param x the horizontal position of individual in the world
          * @param y the vertical position of individual in the world
          * @return true if alive in previous generation
+         * @throws if the row or column is out of range.
          */
         public wasAliveXY(x: number, y: number): boolean
         {
@@ -236,6 +242,7 @@ module WorldOfLife
          *
          * @param x the horizontal position of individual in the world
          * @param y the vertical position of individual in the world
+         * @throws if the row or column is out of range.
          */
         public makeAliveXY(x: number, y: number): void
         {
@@ -252,6 +259,7 @@ module WorldOfLife
          *
          * @param x the horizontal position of individual in the world
          * @param y the vertical position of individual in the world
+         * @throws if the row or column is out of range.
          */
         public makeDeadXY(x: number, y: number): void
         {

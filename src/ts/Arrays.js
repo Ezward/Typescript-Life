@@ -16,3 +16,4 @@ var Arrays;
     }
     Arrays.newArray2d = newArray2d;
 })(Arrays || (Arrays = {}));
+//# sourceMappingURL=Arrays.js.map

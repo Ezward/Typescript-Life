@@ -189,6 +189,10 @@ var WorldOfLife;
         * @param theWorld is the World this Population exists within.
         */
         function Population(theWorld) {
+            this._isAlive = {};
+            this._touched = {};
+            this._toRender = {};
+            this._neighborCount = {};
             this._world = theWorld;
             this._wasAlive = {};
             this._isAlive = {};
@@ -478,6 +482,72 @@ var RenderLife;
 * Game of Life whose state is defined by
 * WorldOfLife.World and WorldOfLife.Population.
 */
+var RenderSimpleLife;
+(function (RenderSimpleLife) {
+    var CanvasRenderer = (function () {
+        function CanvasRenderer(theCanvas) {
+            this._rendering = false;
+            this._canvas = theCanvas;
+            this._context = theCanvas.getContext("2d");
+        }
+        /**
+        * Render a frame for the given population.
+        * This will erase the previous generation
+        * and draw the current generation
+        *
+        * @param thePopulation
+        */
+        CanvasRenderer.prototype.renderFrame = function (thePopulation) {
+            this.startRender();
+            thePopulation.render(this);
+            this.finishRender();
+        };
+
+        /**
+        * Draw (or erase) an individual at the World location.
+        *
+        * Implements the WorldOfLife.Renderer api.  This
+        * hook that is called repeatedly by Population.render()
+        * as it iterates over the population in order to draw
+        * the erase the previous generation and draw the current
+        * generataion.
+        *
+        * @param x the horizontal position of the individual in the World.
+        * @param y the vertical position of the individual in the World.
+        * @param isAlive true if individual is alive in this generation.
+        * @param wasAlive true if individual was alive in previous generation
+        */
+        CanvasRenderer.prototype.renderIndividual = function (x, y, isAlive, wasAlive) {
+            if (isAlive) {
+                this._context.fillRect(x, y, 1, 1);
+            } else {
+                this._context.clearRect(x, y, 1, 1);
+            }
+        };
+
+        CanvasRenderer.prototype.startRender = function () {
+            if (this._rendering) {
+                this.finishRender();
+            }
+            this._rendering = true;
+            this._context.save();
+            this._context.fillStyle = this._fillColor = "black";
+        };
+
+        CanvasRenderer.prototype.finishRender = function () {
+            this._context.restore();
+            this._rendering = false;
+        };
+        return CanvasRenderer;
+    })();
+    RenderSimpleLife.CanvasRenderer = CanvasRenderer;
+})(RenderSimpleLife || (RenderSimpleLife = {}));
+/// <reference path="WorldOfLife.ts" />
+/**
+* Module to render each generation in Conway's
+* Game of Life whose state is defined by
+* WorldOfLife.World and WorldOfLife.Population.
+*/
 var RenderMagnifiedLife;
 (function (RenderMagnifiedLife) {
     'use strict';
@@ -573,72 +643,6 @@ var RenderMagnifiedLife;
     RenderMagnifiedLife.CanvasRenderer = CanvasRenderer;
 })(RenderMagnifiedLife || (RenderMagnifiedLife = {}));
 /// <reference path="WorldOfLife.ts" />
-/**
-* Module to render each generation in Conway's
-* Game of Life whose state is defined by
-* WorldOfLife.World and WorldOfLife.Population.
-*/
-var RenderSimpleLife;
-(function (RenderSimpleLife) {
-    var CanvasRenderer = (function () {
-        function CanvasRenderer(theCanvas) {
-            this._rendering = false;
-            this._canvas = theCanvas;
-            this._context = theCanvas.getContext("2d");
-        }
-        /**
-        * Render a frame for the given population.
-        * This will erase the previous generation
-        * and draw the current generation
-        *
-        * @param thePopulation
-        */
-        CanvasRenderer.prototype.renderFrame = function (thePopulation) {
-            this.startRender();
-            thePopulation.render(this);
-            this.finishRender();
-        };
-
-        /**
-        * Draw (or erase) an individual at the World location.
-        *
-        * Implements the WorldOfLife.Renderer api.  This
-        * hook that is called repeatedly by Population.render()
-        * as it iterates over the population in order to draw
-        * the erase the previous generation and draw the current
-        * generataion.
-        *
-        * @param x the horizontal position of the individual in the World.
-        * @param y the vertical position of the individual in the World.
-        * @param isAlive true if individual is alive in this generation.
-        * @param wasAlive true if individual was alive in previous generation
-        */
-        CanvasRenderer.prototype.renderIndividual = function (x, y, isAlive, wasAlive) {
-            if (isAlive) {
-                this._context.fillRect(x, y, 1, 1);
-            } else {
-                this._context.clearRect(x, y, 1, 1);
-            }
-        };
-
-        CanvasRenderer.prototype.startRender = function () {
-            if (this._rendering) {
-                this.finishRender();
-            }
-            this._rendering = true;
-            this._context.save();
-            this._context.fillStyle = this._fillColor = "black";
-        };
-
-        CanvasRenderer.prototype.finishRender = function () {
-            this._context.restore();
-            this._rendering = false;
-        };
-        return CanvasRenderer;
-    })();
-    RenderSimpleLife.CanvasRenderer = CanvasRenderer;
-})(RenderSimpleLife || (RenderSimpleLife = {}));
-/// <reference path="WorldOfLife.ts" />
 /// <reference path="RenderLife.ts" />
 /// <reference path="RenderSimpleLife.ts" />
 /// <reference path="RenderMagnifiedLife.ts" />
@@ -668,7 +672,7 @@ function main() {
     thePopulation.makeAliveXY(1, 2);
     thePopulation.makeAliveXY(2, 2);
 
-    for (var i = 0; i < 16000; i += 1) {
+    for (var i = 0; i < 6000; i += 1) {
         thePopulation.makeAliveXY((Math.random() * theColumns) | 0, (Math.random() * theRows) | 0);
     }
 
@@ -705,4 +709,4 @@ function main() {
 }
 
 main();
-//# sourceMappingURL=life.js.map
+//# sourceMappingURL=main.js.map

@@ -6,13 +6,15 @@
  */
 module RenderMagnifiedLife
 {
+    'use strict';
+
 	export class CanvasRenderer implements WorldOfLife.Renderer
 	{
-        private _canvas;
-        private _context;
+        private _canvas: HTMLCanvasElement;
+        private _context: CanvasRenderingContext2D;
         private _magnification: number;
         
-        constructor(theCanvas)
+        constructor(theCanvas: HTMLCanvasElement)
         {
             this._canvas = theCanvas;
             this._context = theCanvas.getContext("2d");

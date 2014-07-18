@@ -1,4 +1,5 @@
 /// <reference path="WorldOfLife.ts" />
+
 /**
  * Module to render each generation in Conway's
  * Game of Life whose state is defined by
@@ -8,10 +9,10 @@ module RenderSimpleLife
 {
 	export class CanvasRenderer implements WorldOfLife.Renderer
 	{
-        private _canvas;
-        private _context;
+        private _canvas: HTMLCanvasElement;
+        private _context: CanvasRenderingContext2D;
         
-        constructor(theCanvas)
+        constructor(theCanvas: HTMLCanvasElement)
         {
             this._canvas = theCanvas;
             this._context = theCanvas.getContext("2d");
