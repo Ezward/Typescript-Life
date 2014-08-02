@@ -14,9 +14,10 @@ function main()
     theStage.width = theStage.clientWidth;
     theStage.height = theStage.clientHeight;
     
-    var theMagnification: number = 2;
+    var theMagnification: number = 4;
     var theRows: number = (theStage.height / theMagnification) | 0;
     var theColumns: number = (theStage.width / theMagnification) | 0;
+    var theInitialPopulation: number = ((theRows * theColumns) / 12) | 0;
 
 	var theWorld = new WorldOfLife.World(theRows, theColumns);
 	var thePopulation = new WorldOfLife.Population(theWorld);
@@ -33,19 +34,11 @@ function main()
     //
     // create random pattern
     //
-    for(var i = 0; i < 16000; i += 1)
+    for(var i = 0; i < theInitialPopulation; i += 1)
     {
         thePopulation.makeAliveXY((Math.random() * theColumns) | 0, (Math.random() * theRows) | 0);
     }
     
-    //
-    // create a second population
-    //
-//    var theOtherPopulation: WorldOfLife.Population = new WorldOfLife.Population(theWorld);
-//    for(var i = 0; i < 6000; i += 1)
-//    {
-//        theOtherPopulation.makeAliveXY((Math.random() * theColumns) | 0, (Math.random() * theRows) | 0);
-//    }
     
 //    var theRenderer = new RenderLife.CanvasRenderer(theStage);
 //    var theRenderer = new RenderSimpleLife.CanvasRenderer(theStage);
@@ -58,13 +51,14 @@ function main()
     var theAnimationLoop = function()
     {
         //
-        // draw both populations
+        // draw the population
         //
         theRenderer.renderFrame(thePopulation);
-//        theRenderer.renderFrame(theOtherPopulation);
         
+        // 
+        // generate the next population
+        //
         thePopulation.nextGeneration();
-//        theOtherPopulation.nextGeneration();
         
         window.requestAnimationFrame(theAnimationLoop);
     }
@@ -72,4 +66,5 @@ function main()
     theAnimationLoop();
 }
 
+// let's go!!
 main();

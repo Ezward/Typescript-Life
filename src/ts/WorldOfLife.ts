@@ -33,11 +33,51 @@ module WorldOfLife
          */
         renderIndividual(x: number, y: number, isAlive: boolean, wasAlive: boolean): void;
     }
+    
+    /**
+     * public interface for an Individual cell in the World.
+     * We export this rather than a concrete implementation (such
+     * as IndividualImpl) so that the module client cannot directly
+     * construct an Individual.
+     */
+    export interface Individual
+    {
+        /**
+         * @return the vertical location of the Individual in the World.
+         */
+        row(): number;
+        
+        /**
+         * @return the horizontal location of the Individual in the World.
+         */
+        column(): number;
+        
+        /**
+         * @return the unique identifier for the Individual.
+         */
+        id(): string;
+        
+        /**
+         * @return the number of neighbors
+         */
+        numberOfNeighbors(): number;
+	
+        /**
+         * Get a neighbor, given the index.
+         *
+         * @param theIndex the index of the neighbor.
+         * @return the neighbor
+         * @throws if theIndex is out of range
+         */
+        getNeighbor(theIndex : number) : Individual;
+    }
         
 	/**
-	 * Individual cell in the Life world.
+	 * Implementation of an Individual cell in the Life world.
+     * This is not exported as part of the module's public
+     * api so that we can make addNeighbor() hidden.
 	 */
-	export class Individual
+    class IndividualImpl implements Individual
 	{
 		private _row : number;
 		private _column : number;
@@ -53,15 +93,30 @@ module WorldOfLife
 			this._column = column;
 		}
 	
-		public get row(): number { return this._row; }
-		public get column(): number { return this._column; }
-		public get id(): string { return this._id; }
+		public row(): number { return this._row; }
+		public column(): number { return this._column; }
+		public id(): string { return this._id; }
 	
 		public addNeighbor(theNeighbor : Individual)
 		{
 			this._neighbors.push(theNeighbor);
 		}
+        
+        /**
+         * @return the number of neighbors
+         */
+        public numberOfNeighbors(): number
+        {
+            return this._neighbors.length;
+        }
 	
+        /**
+         * Get a neighbor, given the index.
+         *
+         * @param theIndex the index of the neighbor.
+         * @return the neighbor
+         * @throws if theIndex is out of range
+         */
 		public getNeighbor(theIndex : number) : Individual
 		{
 			if((theIndex < 0) || (theIndex >= this._neighbors.length)) throw "Individual.getNeighbor() index is out of range.";
@@ -77,7 +132,7 @@ module WorldOfLife
 	{
 		private _rows: number;
 		private _columns : number;
-		private _world: Individual[][];
+		private _world: IndividualImpl[][];
 	
         /**
          * @param rows horizontal size of world
@@ -104,7 +159,7 @@ module WorldOfLife
 			
 				for(var theColumnIndex = 0; theColumnIndex < columns; theColumnIndex += 1)
 				{
-					theRow[theColumnIndex] = new Individual(theId.toString(), theRowIndex, theColumnIndex);
+					theRow[theColumnIndex] = new IndividualImpl(theId.toString(), theRowIndex, theColumnIndex);
 					theId += 1;
 				}
 			}
@@ -118,7 +173,7 @@ module WorldOfLife
 			
 				for(var theColumnIndex = 0; theColumnIndex < columns; theColumnIndex += 1)
 				{
-					var theIndividual : Individual = theRow[theColumnIndex];
+					var theIndividual = theRow[theColumnIndex];
 					var theLeftIndex = (columns + theColumnIndex - 1) % columns;
 					var theRightIndex = (theColumnIndex + 1) % columns;
 				
@@ -276,7 +331,7 @@ module WorldOfLife
          */
 		private isAlive(theIndividual: Individual): boolean
 		{
-			return !!(this._isAlive[theIndividual.id]);
+			return !!(this._isAlive[theIndividual.id()]);
 		}
         
         /** 
@@ -285,7 +340,7 @@ module WorldOfLife
          */
 		private wasAlive(theIndividual: Individual): boolean
 		{
-			return !!(this._wasAlive[theIndividual.id]);
+			return !!(this._wasAlive[theIndividual.id()]);
 		}
 	
         /**
@@ -294,8 +349,8 @@ module WorldOfLife
 		private makeAlive(theIndividual: Individual): void
 		{
 			// add to the isAlive collection
-			this._isAlive[theIndividual.id] = theIndividual;	// for quick lookup of active individuals
-            this._touched[theIndividual.id] = theIndividual;    // so it is drawn.
+			this._isAlive[theIndividual.id()] = theIndividual;	// for quick lookup of active individuals
+            this._touched[theIndividual.id()] = theIndividual;    // so it is drawn.
 		}
 	
         /**
@@ -304,8 +359,8 @@ module WorldOfLife
 		private makeDead(theIndividual: Individual): void
 		{
 			// remove from the isAlive collection
-			delete this._isAlive[theIndividual.id];
-            this._touched[theIndividual.id] = theIndividual;    // so it is drawn.
+			delete this._isAlive[theIndividual.id()];
+            this._touched[theIndividual.id()] = theIndividual;    // so it is drawn.
 		}
 		
 		/**
@@ -346,23 +401,24 @@ module WorldOfLife
 					for(var j = 0; j < 8; j += 1)
 					{
 						var theNeighbor = theIndividual.getNeighbor(j);
+                        var theNeighborId = theNeighbor.id();
 				
 						//
 						// as the live neighbors count goes up, use the state
 						// to decide if the individual will be alive 
 						//
-                        this._neighborCount[theNeighbor.id] = 
-                            this._neighborCount.hasOwnProperty(theNeighbor.id) 
-                                ? (this._neighborCount[theNeighbor.id] + 1) 
+                        this._neighborCount[theNeighborId] = 
+                            this._neighborCount.hasOwnProperty(theNeighborId) 
+                                ? (this._neighborCount[theNeighborId] + 1) 
                                 : 1;
-						switch(this._neighborCount[theNeighbor.id])
+						switch(this._neighborCount[theNeighborId])
 						{
 							case 2:
 							{
 								// * Any live cell with two or three live neighbours lives on to the next generation.
 								if(this.wasAlive(theNeighbor))
 								{
-									this._isAlive[theNeighbor.id] = theNeighbor;	// for quick lookup of active individuals
+									this._isAlive[theNeighborId] = theNeighbor;	// for quick lookup of active individuals
 								}
 								break;
 							}
@@ -370,13 +426,13 @@ module WorldOfLife
 							{
 								// * Any live cell with two or three live neighbours lives on to the next generation.
 								// * Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
-								this._isAlive[theNeighbor.id] = theNeighbor;	// for quick lookup of active individuals
+								this._isAlive[theNeighborId] = theNeighbor;	// for quick lookup of active individuals
 								break;
 							}
 							case 4:
 							{
 								// * Any live cell with more than three live neighbours dies, as if by overcrowding.
-								delete this._isAlive[theNeighbor.id];
+								delete this._isAlive[theNeighborId];
 								break;
 							}
 						}
@@ -398,6 +454,7 @@ module WorldOfLife
 		
         /**
          * Draw the population with the given renderer
+         *
          * @param theRenderer a Renderer used to draw individuals.
          */
         public render(theRenderer: Renderer): void
@@ -408,8 +465,8 @@ module WorldOfLife
                 {
                     var theIndividual: Individual = this._toRender[theId];
                     theRenderer.renderIndividual(
-                        theIndividual.column, 
-                        theIndividual.row, 
+                        theIndividual.column(), 
+                        theIndividual.row(), 
                         this.isAlive(theIndividual), 
                         this.wasAlive(theIndividual));
                 }
@@ -418,6 +475,8 @@ module WorldOfLife
         
         /**
          * Erase the population with the given renderer
+         *
+         * @param theRenderer a Renderer used to draw individuals.
          */
         public erase(theRenderer: Renderer): void
         {
@@ -426,7 +485,7 @@ module WorldOfLife
                 if(this._toRender.hasOwnProperty(theId))
                 {
                     var theIndividual: Individual = this._toRender[theId];
-                    theRenderer.renderIndividual(theIndividual.column, theIndividual.row, false, false);
+                    theRenderer.renderIndividual(theIndividual.column(), theIndividual.row(), false, false);
                 }
             }
         }

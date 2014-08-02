@@ -26,11 +26,15 @@ var WorldOfLife;
 (function (WorldOfLife) {
     'use strict';
 
+    
+
     /**
-    * Individual cell in the Life world.
+    * Implementation of an Individual cell in the Life world.
+    * This is not exported as part of the module's public
+    * api so that we can make addNeighbor() hidden.
     */
-    var Individual = (function () {
-        function Individual(id, row, column) {
+    var IndividualImpl = (function () {
+        function IndividualImpl(id, row, column) {
             this._neighbors = [];
             if ((row < 0) || (column < 0))
                 throw "Individual.constructor() row or column cannot be negative.";
@@ -39,41 +43,42 @@ var WorldOfLife;
             this._row = row;
             this._column = column;
         }
-        Object.defineProperty(Individual.prototype, "row", {
-            get: function () {
-                return this._row;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Individual.prototype, "column", {
-            get: function () {
-                return this._column;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Individual.prototype, "id", {
-            get: function () {
-                return this._id;
-            },
-            enumerable: true,
-            configurable: true
-        });
+        IndividualImpl.prototype.row = function () {
+            return this._row;
+        };
+        IndividualImpl.prototype.column = function () {
+            return this._column;
+        };
+        IndividualImpl.prototype.id = function () {
+            return this._id;
+        };
 
-        Individual.prototype.addNeighbor = function (theNeighbor) {
+        IndividualImpl.prototype.addNeighbor = function (theNeighbor) {
             this._neighbors.push(theNeighbor);
         };
 
-        Individual.prototype.getNeighbor = function (theIndex) {
+        /**
+        * @return the number of neighbors
+        */
+        IndividualImpl.prototype.numberOfNeighbors = function () {
+            return this._neighbors.length;
+        };
+
+        /**
+        * Get a neighbor, given the index.
+        *
+        * @param theIndex the index of the neighbor.
+        * @return the neighbor
+        * @throws if theIndex is out of range
+        */
+        IndividualImpl.prototype.getNeighbor = function (theIndex) {
             if ((theIndex < 0) || (theIndex >= this._neighbors.length))
                 throw "Individual.getNeighbor() index is out of range.";
 
             return this._neighbors[theIndex];
         };
-        return Individual;
+        return IndividualImpl;
     })();
-    WorldOfLife.Individual = Individual;
 
     /**
     * The world grid, made of rows and columns of Individuals
@@ -102,7 +107,7 @@ var WorldOfLife;
                 var theRow = this._world[theRowIndex];
 
                 for (var theColumnIndex = 0; theColumnIndex < columns; theColumnIndex += 1) {
-                    theRow[theColumnIndex] = new Individual(theId.toString(), theRowIndex, theColumnIndex);
+                    theRow[theColumnIndex] = new IndividualImpl(theId.toString(), theRowIndex, theColumnIndex);
                     theId += 1;
                 }
             }
@@ -189,10 +194,6 @@ var WorldOfLife;
         * @param theWorld is the World this Population exists within.
         */
         function Population(theWorld) {
-            this._isAlive = {};
-            this._touched = {};
-            this._toRender = {};
-            this._neighborCount = {};
             this._world = theWorld;
             this._wasAlive = {};
             this._isAlive = {};
@@ -269,7 +270,7 @@ var WorldOfLife;
         * in the current generation.
         */
         Population.prototype.isAlive = function (theIndividual) {
-            return !!(this._isAlive[theIndividual.id]);
+            return !!(this._isAlive[theIndividual.id()]);
         };
 
         /**
@@ -277,7 +278,7 @@ var WorldOfLife;
         * in the previous generation.
         */
         Population.prototype.wasAlive = function (theIndividual) {
-            return !!(this._wasAlive[theIndividual.id]);
+            return !!(this._wasAlive[theIndividual.id()]);
         };
 
         /**
@@ -285,8 +286,8 @@ var WorldOfLife;
         */
         Population.prototype.makeAlive = function (theIndividual) {
             // add to the isAlive collection
-            this._isAlive[theIndividual.id] = theIndividual; // for quick lookup of active individuals
-            this._touched[theIndividual.id] = theIndividual; // so it is drawn.
+            this._isAlive[theIndividual.id()] = theIndividual; // for quick lookup of active individuals
+            this._touched[theIndividual.id()] = theIndividual; // so it is drawn.
         };
 
         /**
@@ -294,8 +295,8 @@ var WorldOfLife;
         */
         Population.prototype.makeDead = function (theIndividual) {
             // remove from the isAlive collection
-            delete this._isAlive[theIndividual.id];
-            this._touched[theIndividual.id] = theIndividual; // so it is drawn.
+            delete this._isAlive[theIndividual.id()];
+            this._touched[theIndividual.id()] = theIndividual; // so it is drawn.
         };
 
         /**
@@ -325,29 +326,30 @@ var WorldOfLife;
 
                     for (var j = 0; j < 8; j += 1) {
                         var theNeighbor = theIndividual.getNeighbor(j);
+                        var theNeighborId = theNeighbor.id();
 
                         //
                         // as the live neighbors count goes up, use the state
                         // to decide if the individual will be alive
                         //
-                        this._neighborCount[theNeighbor.id] = this._neighborCount.hasOwnProperty(theNeighbor.id) ? (this._neighborCount[theNeighbor.id] + 1) : 1;
-                        switch (this._neighborCount[theNeighbor.id]) {
+                        this._neighborCount[theNeighborId] = this._neighborCount.hasOwnProperty(theNeighborId) ? (this._neighborCount[theNeighborId] + 1) : 1;
+                        switch (this._neighborCount[theNeighborId]) {
                             case 2: {
                                 // * Any live cell with two or three live neighbours lives on to the next generation.
                                 if (this.wasAlive(theNeighbor)) {
-                                    this._isAlive[theNeighbor.id] = theNeighbor; // for quick lookup of active individuals
+                                    this._isAlive[theNeighborId] = theNeighbor; // for quick lookup of active individuals
                                 }
                                 break;
                             }
                             case 3: {
                                 // * Any live cell with two or three live neighbours lives on to the next generation.
                                 // * Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
-                                this._isAlive[theNeighbor.id] = theNeighbor; // for quick lookup of active individuals
+                                this._isAlive[theNeighborId] = theNeighbor; // for quick lookup of active individuals
                                 break;
                             }
                             case 4: {
                                 // * Any live cell with more than three live neighbours dies, as if by overcrowding.
-                                delete this._isAlive[theNeighbor.id];
+                                delete this._isAlive[theNeighborId];
                                 break;
                             }
                         }
@@ -364,25 +366,28 @@ var WorldOfLife;
 
         /**
         * Draw the population with the given renderer
+        *
         * @param theRenderer a Renderer used to draw individuals.
         */
         Population.prototype.render = function (theRenderer) {
             for (var theId in this._toRender) {
                 if (this._toRender.hasOwnProperty(theId)) {
                     var theIndividual = this._toRender[theId];
-                    theRenderer.renderIndividual(theIndividual.column, theIndividual.row, this.isAlive(theIndividual), this.wasAlive(theIndividual));
+                    theRenderer.renderIndividual(theIndividual.column(), theIndividual.row(), this.isAlive(theIndividual), this.wasAlive(theIndividual));
                 }
             }
         };
 
         /**
         * Erase the population with the given renderer
+        *
+        * @param theRenderer a Renderer used to draw individuals.
         */
         Population.prototype.erase = function (theRenderer) {
             for (var theId in this._toRender) {
                 if (this._toRender.hasOwnProperty(theId)) {
                     var theIndividual = this._toRender[theId];
-                    theRenderer.renderIndividual(theIndividual.column, theIndividual.row, false, false);
+                    theRenderer.renderIndividual(theIndividual.column(), theIndividual.row(), false, false);
                 }
             }
         };
@@ -476,72 +481,6 @@ var RenderLife;
     })();
     RenderLife.CanvasRenderer = CanvasRenderer;
 })(RenderLife || (RenderLife = {}));
-/// <reference path="WorldOfLife.ts" />
-/**
-* Module to render each generation in Conway's
-* Game of Life whose state is defined by
-* WorldOfLife.World and WorldOfLife.Population.
-*/
-var RenderSimpleLife;
-(function (RenderSimpleLife) {
-    var CanvasRenderer = (function () {
-        function CanvasRenderer(theCanvas) {
-            this._rendering = false;
-            this._canvas = theCanvas;
-            this._context = theCanvas.getContext("2d");
-        }
-        /**
-        * Render a frame for the given population.
-        * This will erase the previous generation
-        * and draw the current generation
-        *
-        * @param thePopulation
-        */
-        CanvasRenderer.prototype.renderFrame = function (thePopulation) {
-            this.startRender();
-            thePopulation.render(this);
-            this.finishRender();
-        };
-
-        /**
-        * Draw (or erase) an individual at the World location.
-        *
-        * Implements the WorldOfLife.Renderer api.  This
-        * hook that is called repeatedly by Population.render()
-        * as it iterates over the population in order to draw
-        * the erase the previous generation and draw the current
-        * generataion.
-        *
-        * @param x the horizontal position of the individual in the World.
-        * @param y the vertical position of the individual in the World.
-        * @param isAlive true if individual is alive in this generation.
-        * @param wasAlive true if individual was alive in previous generation
-        */
-        CanvasRenderer.prototype.renderIndividual = function (x, y, isAlive, wasAlive) {
-            if (isAlive) {
-                this._context.fillRect(x, y, 1, 1);
-            } else {
-                this._context.clearRect(x, y, 1, 1);
-            }
-        };
-
-        CanvasRenderer.prototype.startRender = function () {
-            if (this._rendering) {
-                this.finishRender();
-            }
-            this._rendering = true;
-            this._context.save();
-            this._context.fillStyle = this._fillColor = "black";
-        };
-
-        CanvasRenderer.prototype.finishRender = function () {
-            this._context.restore();
-            this._rendering = false;
-        };
-        return CanvasRenderer;
-    })();
-    RenderSimpleLife.CanvasRenderer = CanvasRenderer;
-})(RenderSimpleLife || (RenderSimpleLife = {}));
 /// <reference path="WorldOfLife.ts" />
 /**
 * Module to render each generation in Conway's
@@ -643,6 +582,72 @@ var RenderMagnifiedLife;
     RenderMagnifiedLife.CanvasRenderer = CanvasRenderer;
 })(RenderMagnifiedLife || (RenderMagnifiedLife = {}));
 /// <reference path="WorldOfLife.ts" />
+/**
+* Module to render each generation in Conway's
+* Game of Life whose state is defined by
+* WorldOfLife.World and WorldOfLife.Population.
+*/
+var RenderSimpleLife;
+(function (RenderSimpleLife) {
+    var CanvasRenderer = (function () {
+        function CanvasRenderer(theCanvas) {
+            this._rendering = false;
+            this._canvas = theCanvas;
+            this._context = theCanvas.getContext("2d");
+        }
+        /**
+        * Render a frame for the given population.
+        * This will erase the previous generation
+        * and draw the current generation
+        *
+        * @param thePopulation
+        */
+        CanvasRenderer.prototype.renderFrame = function (thePopulation) {
+            this.startRender();
+            thePopulation.render(this);
+            this.finishRender();
+        };
+
+        /**
+        * Draw (or erase) an individual at the World location.
+        *
+        * Implements the WorldOfLife.Renderer api.  This
+        * hook that is called repeatedly by Population.render()
+        * as it iterates over the population in order to draw
+        * the erase the previous generation and draw the current
+        * generataion.
+        *
+        * @param x the horizontal position of the individual in the World.
+        * @param y the vertical position of the individual in the World.
+        * @param isAlive true if individual is alive in this generation.
+        * @param wasAlive true if individual was alive in previous generation
+        */
+        CanvasRenderer.prototype.renderIndividual = function (x, y, isAlive, wasAlive) {
+            if (isAlive) {
+                this._context.fillRect(x, y, 1, 1);
+            } else {
+                this._context.clearRect(x, y, 1, 1);
+            }
+        };
+
+        CanvasRenderer.prototype.startRender = function () {
+            if (this._rendering) {
+                this.finishRender();
+            }
+            this._rendering = true;
+            this._context.save();
+            this._context.fillStyle = this._fillColor = "black";
+        };
+
+        CanvasRenderer.prototype.finishRender = function () {
+            this._context.restore();
+            this._rendering = false;
+        };
+        return CanvasRenderer;
+    })();
+    RenderSimpleLife.CanvasRenderer = CanvasRenderer;
+})(RenderSimpleLife || (RenderSimpleLife = {}));
+/// <reference path="WorldOfLife.ts" />
 /// <reference path="RenderLife.ts" />
 /// <reference path="RenderSimpleLife.ts" />
 /// <reference path="RenderMagnifiedLife.ts" />
@@ -656,9 +661,10 @@ function main() {
     theStage.width = theStage.clientWidth;
     theStage.height = theStage.clientHeight;
 
-    var theMagnification = 2;
+    var theMagnification = 4;
     var theRows = (theStage.height / theMagnification) | 0;
     var theColumns = (theStage.width / theMagnification) | 0;
+    var theInitialPopulation = ((theRows * theColumns) / 12) | 0;
 
     var theWorld = new WorldOfLife.World(theRows, theColumns);
     var thePopulation = new WorldOfLife.Population(theWorld);
@@ -672,18 +678,10 @@ function main() {
     thePopulation.makeAliveXY(1, 2);
     thePopulation.makeAliveXY(2, 2);
 
-    for (var i = 0; i < 6000; i += 1) {
+    for (var i = 0; i < theInitialPopulation; i += 1) {
         thePopulation.makeAliveXY((Math.random() * theColumns) | 0, (Math.random() * theRows) | 0);
     }
 
-    //
-    // create a second population
-    //
-    //    var theOtherPopulation: WorldOfLife.Population = new WorldOfLife.Population(theWorld);
-    //    for(var i = 0; i < 6000; i += 1)
-    //    {
-    //        theOtherPopulation.makeAliveXY((Math.random() * theColumns) | 0, (Math.random() * theRows) | 0);
-    //    }
     //    var theRenderer = new RenderLife.CanvasRenderer(theStage);
     //    var theRenderer = new RenderSimpleLife.CanvasRenderer(theStage);
     var theRenderer = new RenderMagnifiedLife.CanvasRenderer(theStage);
@@ -694,19 +692,21 @@ function main() {
     //
     var theAnimationLoop = function () {
         //
-        // draw both populations
+        // draw the population
         //
         theRenderer.renderFrame(thePopulation);
 
-        //        theRenderer.renderFrame(theOtherPopulation);
+        //
+        // generate the next population
+        //
         thePopulation.nextGeneration();
 
-        //        theOtherPopulation.nextGeneration();
         window.requestAnimationFrame(theAnimationLoop);
     };
 
     theAnimationLoop();
 }
 
+// let's go!!
 main();
-//# sourceMappingURL=main.js.map
+//# sourceMappingURL=life.ts.js.map

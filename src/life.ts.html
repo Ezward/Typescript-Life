@@ -7,8 +7,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
-  <title>Conway's Game of Life</title>
-  <meta name="description" content="Conway's Game of Life">
+  <title>Conway's Game of Life in Typescript</title>
+  <meta name="description" content="Conway's Game of Life in Typescript">
   <meta name="author" content="Ezward">
 
   <link rel="stylesheet" href="css/life.css?v=1.0">
@@ -20,13 +20,13 @@
 	  
 </head>
 
-<body ontouchmove=>
+<body>
 	
   <div id="stage-container">
     <canvas id="stage-canvas">Oops, your browser does not support Html5 Canvas.</canvas>
   </div>
 	
-  <script src="js/life.js"></script>
+  <script src="js/life.ts.js"></script>
   <script>
   // prevent elastic overscroll on IOS
     document.body.addEventListener('touchmove', function(event) {
