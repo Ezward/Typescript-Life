@@ -11,13 +11,18 @@ module RenderSimpleLife
 	{
         private _canvas: HTMLCanvasElement;
         private _context: CanvasRenderingContext2D;
+        private _magnification: number;
         
         constructor(theCanvas: HTMLCanvasElement)
         {
             this._canvas = theCanvas;
             this._context = theCanvas.getContext("2d");
+            this.magnification = 1;
         }
         
+        public get magnification() { return this._magnification; }
+        public set magnification(magnification: number) { this._magnification = magnification; }
+
         /**
          * Render a frame for the given population.
          * This will erase the previous generation
@@ -50,11 +55,34 @@ module RenderSimpleLife
         {
             if(isAlive)
             {
-                this._context.fillRect(x, y, 1, 1);
+                //
+                // only need to draw it if newly born,
+                // otherwise it was drawn in prior generation
+                //
+                if(!wasAlive)
+                {
+                    // newly born
+                    this._context.fillRect(
+                        x * this._magnification, 
+                        y * this._magnification, 
+                        this._magnification, 
+                        this._magnification);
+                }
             }
-            else 
+            else // dead
             {
-                this._context.clearRect(x, y, 1, 1);
+                //
+                // only need to erase it if it was alive in prior generation
+                //
+                if(wasAlive)
+                {
+                    // newly deceased
+                    this._context.clearRect(
+                        x * this._magnification, 
+                        y * this._magnification, 
+                        this._magnification, 
+                        this._magnification);
+                }
             }
         }
         

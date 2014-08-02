@@ -3397,10 +3397,10 @@ y.sR(z,C.CD.yu(C.CD.UD(z.clientWidth)))
 y.sfg(z,C.CD.yu(C.CD.UD(z.clientHeight)))
 x=y.gfg(z)
 if(typeof x!=="number")return x.V()
-w=C.CD.yu(Math.floor(x/2))
+w=C.CD.yu(Math.floor(x/3))
 y=y.gR(z)
 if(typeof y!=="number")return y.V()
-v=C.CD.yu(Math.floor(y/2))
+v=C.CD.yu(Math.floor(y/3))
 u=C.CD.yu(C.jn.UD(w*v/12))
 t=new Z.L4(null,null,null,null,null,null)
 t.W5(Z.VQ(w,v))
@@ -3415,7 +3415,7 @@ r=t.CX.W9(y,x)
 if(null!=r){t.Jg.u(0,r.xT,r)
 t.Zq.u(0,r.xT,r)}}q=new K.lB(null,null,null,!1,null)
 q.Ux(z)
-q.Vy=2
+q.Vy=3
 new F.rI(new F.Ot(t,q)).$1(0)},"$0","eE",0,0,1],
 Ot:{
 "^":"Tp:19;a,b",

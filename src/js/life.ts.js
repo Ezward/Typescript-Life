@@ -594,7 +594,19 @@ var RenderSimpleLife;
             this._rendering = false;
             this._canvas = theCanvas;
             this._context = theCanvas.getContext("2d");
+            this.magnification = 1;
         }
+        Object.defineProperty(CanvasRenderer.prototype, "magnification", {
+            get: function () {
+                return this._magnification;
+            },
+            set: function (magnification) {
+                this._magnification = magnification;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
         /**
         * Render a frame for the given population.
         * This will erase the previous generation
@@ -624,9 +636,22 @@ var RenderSimpleLife;
         */
         CanvasRenderer.prototype.renderIndividual = function (x, y, isAlive, wasAlive) {
             if (isAlive) {
-                this._context.fillRect(x, y, 1, 1);
+                //
+                // only need to draw it if newly born,
+                // otherwise it was drawn in prior generation
+                //
+                if (!wasAlive) {
+                    // newly born
+                    this._context.fillRect(x * this._magnification, y * this._magnification, this._magnification, this._magnification);
+                }
             } else {
-                this._context.clearRect(x, y, 1, 1);
+                //
+                // only need to erase it if it was alive in prior generation
+                //
+                if (wasAlive) {
+                    // newly deceased
+                    this._context.clearRect(x * this._magnification, y * this._magnification, this._magnification, this._magnification);
+                }
             }
         };
 
@@ -661,7 +686,7 @@ function main() {
     theStage.width = theStage.clientWidth;
     theStage.height = theStage.clientHeight;
 
-    var theMagnification = 4;
+    var theMagnification = 3;
     var theRows = (theStage.height / theMagnification) | 0;
     var theColumns = (theStage.width / theMagnification) | 0;
     var theInitialPopulation = ((theRows * theColumns) / 12) | 0;
@@ -683,8 +708,9 @@ function main() {
     }
 
     //    var theRenderer = new RenderLife.CanvasRenderer(theStage);
-    //    var theRenderer = new RenderSimpleLife.CanvasRenderer(theStage);
-    var theRenderer = new RenderMagnifiedLife.CanvasRenderer(theStage);
+    var theRenderer = new RenderSimpleLife.CanvasRenderer(theStage);
+
+    //    var theRenderer = new RenderMagnifiedLife.CanvasRenderer(theStage);
     theRenderer.magnification = theMagnification;
 
     //
