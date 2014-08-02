@@ -66,23 +66,23 @@
             <section>
                 <h4>Bulding Typescript</h4>
                 <p>Build with Typescript is easy.  We can run the compiler in watch mode.  Whenever any of the typescript source files changes, the compiler will detect it and rebuild the javascript file that is used in the html file.  From within the life folder, run this command:</p>
-                <p>tsc -w -t ES5 --sourcemap src/ts/*.ts --out src/js/life.ts.js</p>
+                <p><kbd>tsc -w -t ES5 --sourcemap src/ts/*.ts --out src/js/life.ts.js</kbd></p>
             </section>
             <section>
                 <h4>Bulding Dart</h4>
                 <p>The dart source code runs directly in the the Dartium browser because it has a native Dart VM.  The html file has a Javascript script that detects if the browser supports Dart natively and runs the dart files.  Of course, most browsers do not have a native Dart VM, but we can use the dart2js compiler to create equivalent Javascript.  From within the life folder, run this command:</p>
-            <p>dart2js -m -o src/js/life.dart.js src/dart/main.dart</p>
+            <p><kbd>dart2js -m -o src/js/life.dart.js src/dart/main.dart</kbd></p>
             </section>
             <section>
                 <h4>Bulding Less</h4>
                 <p>We are using less.js for generating our css files.  This is perhaps overkill for this project, but part of my goal for this projects was to build a build system that is generally useful for small and large projects.  At this point, I have not good solution for running less in 'watch' mode, so it needs to be run each time the life.less file is changed.  From within the life folder, run this command:</p>
-                <p>lessc src/less/life.less src/css/life.css</p>
+                <p><kbd>lessc src/less/life.less src/css/life.css</kbd></p>
             </section>
             <section>
                 <h4>Running</h4>
                 <p>We will run in a browser, but first we need to server the page.  I've installed a node script using NPM called http-server that runs a local server on port 8080.  From within the life folder, run this command:</p>
-                <p>http-server src</p>
-                <p>Now you can open a browser to http://localhost:8080/life.ts.html to view the typescript version and/or http://localhost:8080/life.dart.html to see the dart version.</p>
+                <p><kbd>http-server src</kbd></p>
+                <p>Now you can open a browser to <kbd>http://localhost:8080/life.ts.html</kbd> to view the typescript version and/or <kbd>http://localhost:8080/life.dart.html</kbd> to see the dart version.</p>
             </section>
             <footer>Conway's Life in Typescript</footer>
         </article>

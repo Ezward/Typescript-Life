@@ -19,9 +19,7 @@ void main()
 
 	World theWorld = new World(theRows, theColumns);
 	Population thePopulation = new Population(theWorld);
-    
-    theWorld._getIndividualXY(0, 0);
-    
+        
 	//
 	// create a glider
 	//
