@@ -1,5 +1,4 @@
 /// <reference path="WorldOfLife.ts" />
-/// <reference path="RenderLife.ts" />
 /// <reference path="RenderSimpleLife.ts" />
 /// <reference path="RenderMagnifiedLife.ts" />
 

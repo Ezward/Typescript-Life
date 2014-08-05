@@ -401,14 +401,26 @@ var WorldOfLife;
 * Game of Life whose state is defined by
 * WorldOfLife.World and WorldOfLife.Population.
 */
-var RenderLife;
-(function (RenderLife) {
+var RenderSimpleLife;
+(function (RenderSimpleLife) {
     var CanvasRenderer = (function () {
         function CanvasRenderer(theCanvas) {
             this._rendering = false;
             this._canvas = theCanvas;
             this._context = theCanvas.getContext("2d");
+            this.magnification = 1;
         }
+        Object.defineProperty(CanvasRenderer.prototype, "magnification", {
+            get: function () {
+                return this._magnification;
+            },
+            set: function (magnification) {
+                this._magnification = magnification;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
         /**
         * Render a frame for the given population.
         * This will erase the previous generation
@@ -437,30 +449,23 @@ var RenderLife;
         * @param wasAlive true if individual was alive in previous generation
         */
         CanvasRenderer.prototype.renderIndividual = function (x, y, isAlive, wasAlive) {
-            if (wasAlive || isAlive) {
+            if (isAlive) {
                 //
-                // we use different colors for survival, birth and death
+                // only need to draw it if newly born,
+                // otherwise it was drawn in prior generation
                 //
-                var theFillColor = this._fillColor;
-                if (isAlive) {
-                    if (wasAlive) {
-                        theFillColor = "black"; // survival
-                    } else {
-                        theFillColor = "green"; // birth
-                    }
-                } else if (wasAlive) {
-                    theFillColor = "red"; // death
+                if (!wasAlive) {
+                    // newly born
+                    this._context.fillRect(x * this._magnification, y * this._magnification, this._magnification, this._magnification);
                 }
-
-                // changing the color can be expensive, so only do it when color actuall changes
-                if (theFillColor != this._fillColor) {
-                    this._context.fillStyle = this._fillColor = theFillColor;
-                }
-                this._context.fillRect(x, y, 1, 1);
             } else {
-                // this individual has died more than one generation ago
-                // so can just be erased.
-                this._context.clearRect(x, y, 1, 1);
+                //
+                // only need to erase it if it was alive in prior generation
+                //
+                if (wasAlive) {
+                    // newly deceased
+                    this._context.clearRect(x * this._magnification, y * this._magnification, this._magnification, this._magnification);
+                }
             }
         };
 
@@ -479,8 +484,8 @@ var RenderLife;
         };
         return CanvasRenderer;
     })();
-    RenderLife.CanvasRenderer = CanvasRenderer;
-})(RenderLife || (RenderLife = {}));
+    RenderSimpleLife.CanvasRenderer = CanvasRenderer;
+})(RenderSimpleLife || (RenderSimpleLife = {}));
 /// <reference path="WorldOfLife.ts" />
 /**
 * Module to render each generation in Conway's
@@ -582,98 +587,6 @@ var RenderMagnifiedLife;
     RenderMagnifiedLife.CanvasRenderer = CanvasRenderer;
 })(RenderMagnifiedLife || (RenderMagnifiedLife = {}));
 /// <reference path="WorldOfLife.ts" />
-/**
-* Module to render each generation in Conway's
-* Game of Life whose state is defined by
-* WorldOfLife.World and WorldOfLife.Population.
-*/
-var RenderSimpleLife;
-(function (RenderSimpleLife) {
-    var CanvasRenderer = (function () {
-        function CanvasRenderer(theCanvas) {
-            this._rendering = false;
-            this._canvas = theCanvas;
-            this._context = theCanvas.getContext("2d");
-            this.magnification = 1;
-        }
-        Object.defineProperty(CanvasRenderer.prototype, "magnification", {
-            get: function () {
-                return this._magnification;
-            },
-            set: function (magnification) {
-                this._magnification = magnification;
-            },
-            enumerable: true,
-            configurable: true
-        });
-
-        /**
-        * Render a frame for the given population.
-        * This will erase the previous generation
-        * and draw the current generation
-        *
-        * @param thePopulation
-        */
-        CanvasRenderer.prototype.renderFrame = function (thePopulation) {
-            this.startRender();
-            thePopulation.render(this);
-            this.finishRender();
-        };
-
-        /**
-        * Draw (or erase) an individual at the World location.
-        *
-        * Implements the WorldOfLife.Renderer api.  This
-        * hook that is called repeatedly by Population.render()
-        * as it iterates over the population in order to draw
-        * the erase the previous generation and draw the current
-        * generataion.
-        *
-        * @param x the horizontal position of the individual in the World.
-        * @param y the vertical position of the individual in the World.
-        * @param isAlive true if individual is alive in this generation.
-        * @param wasAlive true if individual was alive in previous generation
-        */
-        CanvasRenderer.prototype.renderIndividual = function (x, y, isAlive, wasAlive) {
-            if (isAlive) {
-                //
-                // only need to draw it if newly born,
-                // otherwise it was drawn in prior generation
-                //
-                if (!wasAlive) {
-                    // newly born
-                    this._context.fillRect(x * this._magnification, y * this._magnification, this._magnification, this._magnification);
-                }
-            } else {
-                //
-                // only need to erase it if it was alive in prior generation
-                //
-                if (wasAlive) {
-                    // newly deceased
-                    this._context.clearRect(x * this._magnification, y * this._magnification, this._magnification, this._magnification);
-                }
-            }
-        };
-
-        CanvasRenderer.prototype.startRender = function () {
-            if (this._rendering) {
-                this.finishRender();
-            }
-            this._rendering = true;
-            this._context.save();
-            this._context.fillStyle = this._fillColor = "black";
-        };
-
-        CanvasRenderer.prototype.finishRender = function () {
-            this._context.restore();
-            this._rendering = false;
-        };
-        return CanvasRenderer;
-    })();
-    RenderSimpleLife.CanvasRenderer = CanvasRenderer;
-})(RenderSimpleLife || (RenderSimpleLife = {}));
-/// <reference path="WorldOfLife.ts" />
-/// <reference path="RenderLife.ts" />
 /// <reference path="RenderSimpleLife.ts" />
 /// <reference path="RenderMagnifiedLife.ts" />
 function main() {
