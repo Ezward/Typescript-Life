@@ -4,7 +4,7 @@
  * Game of Life whose state is defined by
  * WorldOfLife.World and WorldOfLife.Population.
  */
-module RenderMagnifiedLife
+module RenderColorLife
 {
     'use strict';
 

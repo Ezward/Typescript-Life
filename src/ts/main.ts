@@ -1,6 +1,6 @@
 /// <reference path="WorldOfLife.ts" />
 /// <reference path="RenderSimpleLife.ts" />
-/// <reference path="RenderMagnifiedLife.ts" />
+/// <reference path="RenderColorLife.ts" />
 
 function main()
 {
@@ -39,10 +39,10 @@ function main()
     }
     
     
-//    var theRenderer = new RenderLife.CanvasRenderer(theStage);
     var theRenderer = new RenderSimpleLife.CanvasRenderer(theStage);
-//    var theRenderer = new RenderMagnifiedLife.CanvasRenderer(theStage);
+//    var theRenderer = new RenderColorLife.CanvasRenderer(theStage);
     theRenderer.magnification = theMagnification;
+
 
 	//
 	// start the render/generation loop

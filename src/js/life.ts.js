@@ -492,8 +492,8 @@ var RenderSimpleLife;
 * Game of Life whose state is defined by
 * WorldOfLife.World and WorldOfLife.Population.
 */
-var RenderMagnifiedLife;
-(function (RenderMagnifiedLife) {
+var RenderColorLife;
+(function (RenderColorLife) {
     'use strict';
 
     var CanvasRenderer = (function () {
@@ -584,11 +584,11 @@ var RenderMagnifiedLife;
         };
         return CanvasRenderer;
     })();
-    RenderMagnifiedLife.CanvasRenderer = CanvasRenderer;
-})(RenderMagnifiedLife || (RenderMagnifiedLife = {}));
+    RenderColorLife.CanvasRenderer = CanvasRenderer;
+})(RenderColorLife || (RenderColorLife = {}));
 /// <reference path="WorldOfLife.ts" />
 /// <reference path="RenderSimpleLife.ts" />
-/// <reference path="RenderMagnifiedLife.ts" />
+/// <reference path="RenderColorLife.ts" />
 function main() {
     'use strict';
 
@@ -620,10 +620,9 @@ function main() {
         thePopulation.makeAliveXY((Math.random() * theColumns) | 0, (Math.random() * theRows) | 0);
     }
 
-    //    var theRenderer = new RenderLife.CanvasRenderer(theStage);
     var theRenderer = new RenderSimpleLife.CanvasRenderer(theStage);
 
-    //    var theRenderer = new RenderMagnifiedLife.CanvasRenderer(theStage);
+    //    var theRenderer = new RenderColorLife.CanvasRenderer(theStage);
     theRenderer.magnification = theMagnification;
 
     //
