@@ -351,6 +351,7 @@ module WorldOfLife
 			// add to the isAlive collection
 			this._isAlive[theIndividual.id()] = theIndividual;	// for quick lookup of active individuals
             this._touched[theIndividual.id()] = theIndividual;    // so it is drawn.
+            this._toRender[theIndividual.id()] = theIndividual;    // so it is drawn.
 		}
 	
         /**
@@ -361,6 +362,7 @@ module WorldOfLife
 			// remove from the isAlive collection
 			delete this._isAlive[theIndividual.id()];
             this._touched[theIndividual.id()] = theIndividual;    // so it is drawn.
+            this._toRender[theIndividual.id()] = theIndividual;    // so it is drawn.
 		}
 		
 		/**
