@@ -13,7 +13,7 @@ function main()
     theStage.width = theStage.clientWidth;
     theStage.height = theStage.clientHeight;
     
-    var theMagnification: number = 3;
+    var theMagnification: number = 4;
     var theRows: number = (theStage.height / theMagnification) | 0;
     var theColumns: number = (theStage.width / theMagnification) | 0;
     var theInitialPopulation: number = ((theRows * theColumns) / 12) | 0;

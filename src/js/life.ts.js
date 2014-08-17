@@ -286,8 +286,10 @@ var WorldOfLife;
         */
         Population.prototype.makeAlive = function (theIndividual) {
             // add to the isAlive collection
-            this._isAlive[theIndividual.id()] = theIndividual; // for quick lookup of active individuals
-            this._touched[theIndividual.id()] = theIndividual; // so it is drawn.
+            var theIndividualId = theIndividual.id();
+            this._isAlive[theIndividualId] = theIndividual; // for quick lookup of active individuals
+            this._touched[theIndividualId] = theIndividual; // so it is drawn.
+            this._toRender[theIndividualId] = theIndividual; // so it is drawn.
         };
 
         /**
@@ -295,8 +297,10 @@ var WorldOfLife;
         */
         Population.prototype.makeDead = function (theIndividual) {
             // remove from the isAlive collection
-            delete this._isAlive[theIndividual.id()];
-            this._touched[theIndividual.id()] = theIndividual; // so it is drawn.
+            var theIndividualId = theIndividual.id();
+            delete this._isAlive[theIndividualId];
+            this._touched[theIndividualId] = theIndividual; // so it is drawn.
+            this._toRender[theIndividualId] = theIndividual; // so it is drawn.
         };
 
         /**
@@ -599,7 +603,7 @@ function main() {
     theStage.width = theStage.clientWidth;
     theStage.height = theStage.clientHeight;
 
-    var theMagnification = 3;
+    var theMagnification = 4;
     var theRows = (theStage.height / theMagnification) | 0;
     var theColumns = (theStage.width / theMagnification) | 0;
     var theInitialPopulation = ((theRows * theColumns) / 12) | 0;

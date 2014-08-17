@@ -349,8 +349,10 @@ module WorldOfLife
 		private makeAlive(theIndividual: Individual): void
 		{
 			// add to the isAlive collection
-			this._isAlive[theIndividual.id()] = theIndividual;	// for quick lookup of active individuals
-            this._touched[theIndividual.id()] = theIndividual;    // so it is drawn.
+            var theIndividualId: string = theIndividual.id();
+			this._isAlive[theIndividualId] = theIndividual;	// for quick lookup of active individuals
+            this._touched[theIndividualId] = theIndividual;    // so it is drawn.
+            this._toRender[theIndividualId] = theIndividual;    // so it is drawn.
 		}
 	
         /**
@@ -359,8 +361,10 @@ module WorldOfLife
 		private makeDead(theIndividual: Individual): void
 		{
 			// remove from the isAlive collection
-			delete this._isAlive[theIndividual.id()];
-            this._touched[theIndividual.id()] = theIndividual;    // so it is drawn.
+            var theIndividualId: string = theIndividual.id();
+			delete this._isAlive[theIndividualId];
+            this._touched[theIndividualId] = theIndividual;    // so it is drawn.
+            this._toRender[theIndividualId] = theIndividual;    // so it is drawn.
 		}
 		
 		/**
