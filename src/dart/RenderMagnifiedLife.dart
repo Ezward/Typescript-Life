@@ -59,11 +59,11 @@ class CanvasRenderer implements WorldOfLife.Renderer
             {
                 if(wasAlive)
                 {
-                    theFillColor = "black"; // survival
+                    theFillColor = "blue"; // survival
                 }
                 else
                 {
-                    theFillColor = "green"; // birth
+                    theFillColor = "yellow"; // birth
                 }
             }
             else if(wasAlive)

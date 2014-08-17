@@ -303,8 +303,10 @@ class Population
     void _makeAlive(_Individual theIndividual)
     {
         // add to the isAlive collection
-        this._isAlive[theIndividual.id] = theIndividual;	// for quick lookup of active individuals
-        this._touched[theIndividual.id] = theIndividual;    // so it is drawn.
+        final String theIndividualId = theIndividual.id;
+        this._isAlive[theIndividualId] = theIndividual;	// for quick lookup of active individuals
+        this._touched[theIndividualId] = theIndividual;    // so it is drawn.
+        this._toRender[theIndividualId] = theIndividual;    // so it is drawn.
     }
 
     /**
@@ -313,8 +315,10 @@ class Population
     void _makeDead(_Individual theIndividual)
     {
         // remove from the isAlive collection
-        this._isAlive.remove(theIndividual.id);
-        this._touched[theIndividual.id] = theIndividual;    // so it is drawn.
+        final String theIndividualId = theIndividual.id;
+        this._isAlive.remove(theIndividualId);
+        this._touched[theIndividualId] = theIndividual;    // so it is drawn.
+        this._toRender[theIndividualId] = theIndividual;    // so it is drawn.
     }
 
     /**

@@ -12,7 +12,7 @@ void main()
     theStage.width = theStage.clientWidth;
     theStage.height = theStage.clientHeight;
     
-    int theMagnification = 1;
+    int theMagnification = 4;
     int theRows = (theStage.height / theMagnification).floor();
     int theColumns = (theStage.width / theMagnification).floor();
     int theInitialPopulation = ((theRows * theColumns) / 12).round();
