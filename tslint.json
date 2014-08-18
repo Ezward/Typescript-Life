@@ -7,8 +7,7 @@
     ],
     "class-name": true,
     "comment-format": [true,
-        "check-space",
-        "check-lowercase"
+        "check-space"
     ],
     "curly": true,
     "eofline": true,
@@ -20,7 +19,7 @@
     "label-undefined": true,
     "max-line-length": [true, 140],
     "no-arg": true,
-    "no-bitwise": true,
+    "no-bitwise": false,
     "no-console": [true,
         "debug",
         "info",
@@ -43,7 +42,7 @@
     "no-unreachable": true,
     "no-use-before-declare": true,
     "no-var-requires": true,
-    "one-line": [true,
+    "one-line": [false,
         "check-open-brace",
         "check-catch",
         "check-else",

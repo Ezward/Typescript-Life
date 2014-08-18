@@ -7,6 +7,8 @@
  */
 module RenderSimpleLife
 {
+    "use strict";
+    
 	export class CanvasRenderer implements WorldOfLife.Renderer
 	{
         private _canvas: HTMLCanvasElement;
@@ -30,7 +32,7 @@ module RenderSimpleLife
          *
          * @param thePopulation 
          */
-        public renderFrame(thePopulation: WorldOfLife.Population)
+        public renderFrame(thePopulation: WorldOfLife.Population) : void
         {
             this.startRender();
             thePopulation.render(this);
@@ -51,21 +53,21 @@ module RenderSimpleLife
          * @param isAlive true if individual is alive in this generation.
          * @param wasAlive true if individual was alive in previous generation
          */
-        public renderIndividual(x: number, y: number, isAlive: boolean, wasAlive: boolean)
+        public renderIndividual(x: number, y: number, isAlive: boolean, wasAlive: boolean): void
         {
-            if(isAlive)
+            if (isAlive)
             {
                 //
                 // only need to draw it if newly born,
                 // otherwise it was drawn in prior generation
                 //
-                if(!wasAlive)
+                if (!wasAlive)
                 {
                     // newly born
                     this._context.fillRect(
-                        x * this._magnification, 
-                        y * this._magnification, 
-                        this._magnification, 
+                        x * this._magnification,
+                        y * this._magnification,
+                        this._magnification,
                         this._magnification);
                 }
             }
@@ -74,13 +76,13 @@ module RenderSimpleLife
                 //
                 // only need to erase it if it was alive in prior generation
                 //
-                if(wasAlive)
+                if (wasAlive)
                 {
                     // newly deceased
                     this._context.clearRect(
-                        x * this._magnification, 
-                        y * this._magnification, 
-                        this._magnification, 
+                        x * this._magnification,
+                        y * this._magnification,
+                        this._magnification,
                         this._magnification);
                 }
             }
@@ -90,7 +92,7 @@ module RenderSimpleLife
         private _fillColor: String;
         private startRender(): void
         {
-            if(this._rendering)
+            if (this._rendering)
             {
                 this.finishRender();
             }

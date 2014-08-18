@@ -6,13 +6,15 @@
  */
 module RenderColorLife
 {
-    'use strict';
+    "use strict";
 
 	export class CanvasRenderer implements WorldOfLife.Renderer
 	{
         private _canvas: HTMLCanvasElement;
         private _context: CanvasRenderingContext2D;
         private _magnification: number;
+        private _rendering = false;
+        private _fillColor: string;
         
         constructor(theCanvas: HTMLCanvasElement)
         {
@@ -52,17 +54,17 @@ module RenderColorLife
          * @param isAlive true if individual is alive in this generation.
          * @param wasAlive true if individual was alive in previous generation
          */
-        public renderIndividual(x: number, y: number, isAlive: boolean, wasAlive: boolean)
+        public renderIndividual(x: number, y: number, isAlive: boolean, wasAlive: boolean): void
         {
-            if(wasAlive || isAlive)
+            if (wasAlive || isAlive)
             {
                 //
                 // we use different colors for survival, birth and death
                 //
-                var theFillColor = this._fillColor;
-                if(isAlive)
+                var theFillColor: string = this._fillColor;
+                if (isAlive)
                 {
-                    if(wasAlive)
+                    if (wasAlive)
                     {
                         theFillColor = "black"; // survival
                     }
@@ -71,39 +73,37 @@ module RenderColorLife
                         theFillColor = "green"; // birth
                     }
                 }
-                else if(wasAlive)
+                else if (wasAlive)
                 {
                     theFillColor = "red";       // death
                 }
 
                 // changing the color can be expensive, so only do it when color actuall changes
-                if(theFillColor != this._fillColor)
+                if (theFillColor !== this._fillColor)
                 {
                     this._context.fillStyle = this._fillColor = theFillColor;
                 }
                 this._context.fillRect(
-                    x * this._magnification, 
-                    y * this._magnification, 
-                    this._magnification, 
+                    x * this._magnification,
+                    y * this._magnification,
+                    this._magnification,
                     this._magnification);
             }
-            else 
+            else
             {
                 // this individual has died more than one generation ago
                 // so can just be erased.
                 this._context.clearRect(
-                    x * this._magnification, 
-                    y * this._magnification, 
-                    this._magnification, 
+                    x * this._magnification,
+                    y * this._magnification,
+                    this._magnification,
                     this._magnification);
             }
         }
         
-        private _rendering = false;
-        private _fillColor: String;
-        private startRender()
+        private startRender(): void
         {
-            if(this._rendering)
+            if (this._rendering)
             {
                 this.finishRender();
             }
@@ -112,7 +112,7 @@ module RenderColorLife
             this._context.fillStyle = this._fillColor = "black";
         }
         
-        private finishRender()
+        private finishRender(): void
         {
             this._context.restore();
             this._rendering = false;

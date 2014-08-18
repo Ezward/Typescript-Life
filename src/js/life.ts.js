@@ -24,7 +24,7 @@ var Arrays;
 */
 var WorldOfLife;
 (function (WorldOfLife) {
-    'use strict';
+    "use strict";
 
     
 
@@ -36,8 +36,9 @@ var WorldOfLife;
     var IndividualImpl = (function () {
         function IndividualImpl(id, row, column) {
             this._neighbors = [];
-            if ((row < 0) || (column < 0))
+            if ((row < 0) || (column < 0)) {
                 throw "Individual.constructor() row or column cannot be negative.";
+            }
 
             this._id = id;
             this._row = row;
@@ -72,8 +73,9 @@ var WorldOfLife;
         * @throws if theIndex is out of range
         */
         IndividualImpl.prototype.getNeighbor = function (theIndex) {
-            if ((theIndex < 0) || (theIndex >= this._neighbors.length))
+            if ((theIndex < 0) || (theIndex >= this._neighbors.length)) {
                 throw "Individual.getNeighbor() index is out of range.";
+            }
 
             return this._neighbors[theIndex];
         };
@@ -89,8 +91,9 @@ var WorldOfLife;
         * @param columns vertical size of world.
         */
         function World(rows, columns) {
-            if ((rows <= 0) || (columns <= 0))
+            if ((rows <= 0) || (columns <= 0)) {
                 throw "World.constructor() was passed non-positive dimensions.";
+            }
 
             //
             // create the map
@@ -103,21 +106,24 @@ var WorldOfLife;
             // construct all the individuals
             //
             var theId = 1;
-            for (var theRowIndex = 0; theRowIndex < rows; theRowIndex += 1) {
-                var theRow = this._world[theRowIndex];
+            var theRowIndex;
+            var theColumnIndex;
+            var theRow;
+            for (theRowIndex = 0; theRowIndex < rows; theRowIndex += 1) {
+                theRow = this._world[theRowIndex];
 
-                for (var theColumnIndex = 0; theColumnIndex < columns; theColumnIndex += 1) {
+                for (theColumnIndex = 0; theColumnIndex < columns; theColumnIndex += 1) {
                     theRow[theColumnIndex] = new IndividualImpl(theId.toString(), theRowIndex, theColumnIndex);
                     theId += 1;
                 }
             }
 
-            for (var theRowIndex = 0; theRowIndex < rows; theRowIndex += 1) {
+            for (theRowIndex = 0; theRowIndex < rows; theRowIndex += 1) {
                 var theAboveRow = this._world[(rows + theRowIndex - 1) % rows];
-                var theRow = this._world[theRowIndex];
+                theRow = this._world[theRowIndex];
                 var theBelowRow = this._world[(theRowIndex + 1) % rows];
 
-                for (var theColumnIndex = 0; theColumnIndex < columns; theColumnIndex += 1) {
+                for (theColumnIndex = 0; theColumnIndex < columns; theColumnIndex += 1) {
                     var theIndividual = theRow[theColumnIndex];
                     var theLeftIndex = (columns + theColumnIndex - 1) % columns;
                     var theRightIndex = (theColumnIndex + 1) % columns;
@@ -172,10 +178,12 @@ var WorldOfLife;
         * @throws if the row or column is out of range.
         */
         World.prototype._getIndividualXY = function (x, y) {
-            if ((y < 0) || (y >= this._rows))
+            if ((y < 0) || (y >= this._rows)) {
                 throw "Population.getIndividualXY() row is out of range.";
-            if ((x < 0) || (x >= this._columns))
+            }
+            if ((x < 0) || (x >= this._columns)) {
                 throw "Population.getIndividualXY() column is out of range.";
+            }
             return this._world[y][x];
         };
         return World;
@@ -323,7 +331,12 @@ var WorldOfLife;
             this._touched = {}; // those that must be drawn.
             this._neighborCount = {}; // number of neighbors for each neighbor of alive Invididual
 
-            for (var theId in this._wasAlive) {
+            //
+            // loop through all the alive individuals and
+            // tell their neighbors that they are alive.
+            //
+            var theId;
+            for (theId in this._wasAlive) {
                 if (this._wasAlive.hasOwnProperty(theId)) {
                     var theIndividual = this._wasAlive[theId];
                     this._touched[theId] = theIndividual; // will be drawn one way or another
@@ -361,7 +374,7 @@ var WorldOfLife;
                 }
             }
 
-            for (var theId in this._isAlive) {
+            for (theId in this._isAlive) {
                 if (this._isAlive.hasOwnProperty(theId)) {
                     this._toRender[theId] = this._touched[theId] = this._isAlive[theId]; // alive individuals are drawn.
                 }
@@ -374,7 +387,8 @@ var WorldOfLife;
         * @param theRenderer a Renderer used to draw individuals.
         */
         Population.prototype.render = function (theRenderer) {
-            for (var theId in this._toRender) {
+            var theId;
+            for (theId in this._toRender) {
                 if (this._toRender.hasOwnProperty(theId)) {
                     var theIndividual = this._toRender[theId];
                     theRenderer.renderIndividual(theIndividual.column(), theIndividual.row(), this.isAlive(theIndividual), this.wasAlive(theIndividual));
@@ -388,7 +402,8 @@ var WorldOfLife;
         * @param theRenderer a Renderer used to draw individuals.
         */
         Population.prototype.erase = function (theRenderer) {
-            for (var theId in this._toRender) {
+            var theId;
+            for (theId in this._toRender) {
                 if (this._toRender.hasOwnProperty(theId)) {
                     var theIndividual = this._toRender[theId];
                     theRenderer.renderIndividual(theIndividual.column(), theIndividual.row(), false, false);
@@ -407,6 +422,8 @@ var WorldOfLife;
 */
 var RenderSimpleLife;
 (function (RenderSimpleLife) {
+    "use strict";
+
     var CanvasRenderer = (function () {
         function CanvasRenderer(theCanvas) {
             this._rendering = false;
@@ -498,7 +515,7 @@ var RenderSimpleLife;
 */
 var RenderColorLife;
 (function (RenderColorLife) {
-    'use strict';
+    "use strict";
 
     var CanvasRenderer = (function () {
         function CanvasRenderer(theCanvas) {
@@ -562,7 +579,7 @@ var RenderColorLife;
                 }
 
                 // changing the color can be expensive, so only do it when color actuall changes
-                if (theFillColor != this._fillColor) {
+                if (theFillColor !== this._fillColor) {
                     this._context.fillStyle = this._fillColor = theFillColor;
                 }
                 this._context.fillRect(x * this._magnification, y * this._magnification, this._magnification, this._magnification);
@@ -594,7 +611,7 @@ var RenderColorLife;
 /// <reference path="RenderSimpleLife.ts" />
 /// <reference path="RenderColorLife.ts" />
 function main() {
-    'use strict';
+    "use strict";
 
     //
     // get our canvas, synchronize the css size and the canvas coordinate system.
@@ -632,7 +649,7 @@ function main() {
     //
     // start the render/generation loop
     //
-    var theAnimationLoop = function () {
+    var theAnimationLoop = function (theTime) {
         //
         // draw the population
         //
@@ -646,7 +663,7 @@ function main() {
         window.requestAnimationFrame(theAnimationLoop);
     };
 
-    theAnimationLoop();
+    theAnimationLoop(0);
 }
 
 // let's go!!

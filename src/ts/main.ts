@@ -2,9 +2,9 @@
 /// <reference path="RenderSimpleLife.ts" />
 /// <reference path="RenderColorLife.ts" />
 
-function main()
+function main(): void
 {
-    'use strict';
+    "use strict";
     
 	//
 	// get our canvas, synchronize the css size and the canvas coordinate system.
@@ -18,9 +18,9 @@ function main()
     var theColumns: number = (theStage.width / theMagnification) | 0;
     var theInitialPopulation: number = ((theRows * theColumns) / 12) | 0;
 
-	var theWorld = new WorldOfLife.World(theRows, theColumns);
-	var thePopulation = new WorldOfLife.Population(theWorld);
-
+	var theWorld: WorldOfLife.World = new WorldOfLife.World(theRows, theColumns);
+	var thePopulation: WorldOfLife.Population = new WorldOfLife.Population(theWorld);
+        
 	//
 	// create a glider
 	//
@@ -33,13 +33,13 @@ function main()
     //
     // create random pattern
     //
-    for(var i = 0; i < theInitialPopulation; i += 1)
+    for (var i: number = 0; i < theInitialPopulation; i += 1)
     {
         thePopulation.makeAliveXY((Math.random() * theColumns) | 0, (Math.random() * theRows) | 0);
     }
     
     
-    var theRenderer = new RenderSimpleLife.CanvasRenderer(theStage);
+    var theRenderer: RenderSimpleLife.CanvasRenderer = new RenderSimpleLife.CanvasRenderer(theStage);
 //    var theRenderer = new RenderColorLife.CanvasRenderer(theStage);
     theRenderer.magnification = theMagnification;
 
@@ -47,7 +47,7 @@ function main()
 	//
 	// start the render/generation loop
 	//
-    var theAnimationLoop = function()
+    var theAnimationLoop: FrameRequestCallback = function(theTime: number): void
     {
         //
         // draw the population
@@ -60,10 +60,11 @@ function main()
         thePopulation.nextGeneration();
         
         window.requestAnimationFrame(theAnimationLoop);
-    }
+    };
     
-    theAnimationLoop();
+    theAnimationLoop(0);
 }
+
 
 // let's go!!
 main();
