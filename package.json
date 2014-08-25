@@ -1,0 +1,35 @@
+{
+  "name": "Life",
+  "version": "0.1.0",
+  "description": "Conway's Game of Life",
+  "main": "life.ts.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ezward/Typescript-Life.git"
+  },
+  "keywords": [
+    "TypeScript",
+    "Dart",
+    "Less",
+    "Life",
+    "Cellular",
+    "Automata"
+  ],
+  "author": "Ezward",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ezward/Typescript-Life/issues"
+  },
+  "homepage": "https://github.com/Ezward/Typescript-Life",
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-less": "~0.8.2",
+    "grunt-contrib-nodeunit": "~0.4.1",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-ts": "^1.11.7"
+  }
+}
