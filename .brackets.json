@@ -2,12 +2,14 @@
     "typescript": {
         "target": "ES5",
         "noImplicitAny": true,
-        "sources" : [
+        "sources": [
             "src/**/*.ts"
         ]
     },
-    
     "tslint": {
         "enabled": true
-    }
+    },
+    "jscodehints.detectedExclusions": [
+        "C:/Users/Ed/Documents/GitHub/Typescript-Life/node_modules/grunt/node_modules/glob/test/00-setup.js"
+    ]
 }

@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
     grunt.initConfig({
         less: {
             compile: {
@@ -19,7 +19,7 @@ module.exports = function(grunt) {
             options: {
                 target: 'ES5',
                 module: 'AMD',
-                sourcemap: true,
+                sourcemap: true
             },
             compile: {
                 src: 'src/ts/main.ts',
