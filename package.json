@@ -30,6 +30,7 @@
     "grunt-contrib-less": "~0.8.2",
     "grunt-contrib-nodeunit": "~0.4.1",
     "grunt-contrib-watch": "^0.6.1",
+    "grunt-dart2js": "0.0.5",
     "grunt-ts": "^1.11.7"
   }
 }

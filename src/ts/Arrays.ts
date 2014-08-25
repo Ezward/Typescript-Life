@@ -14,5 +14,4 @@ module Arrays
 
 		return theArray;
 	}
-    
 }
