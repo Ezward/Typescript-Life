@@ -35,8 +35,13 @@ module.exports = function (grunt) {
         },
         dart2js: {
             //
-            // no options: assumes dart2js executable is in default location
+            // options: assumes dart2js executable is in default location
             //
+            options: {
+                "dart2js_bin": (process.platform == 'win32') 
+                    ? (process.env['USERPROFILE'] + "/dart/dart-sdk/bin/dart2js.bat") 
+                    : (process.env['USER'] + "/dart/dart-sdk/bin/dart2js")
+            },
             compile: {
                 files: {'src/js/life.dart.js': 'src/dart/main.dart'}
             }

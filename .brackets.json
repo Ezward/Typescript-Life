@@ -10,6 +10,8 @@
         "enabled": true
     },
     "jscodehints.detectedExclusions": [
-        "C:/Users/Ed/Documents/GitHub/Typescript-Life/node_modules/grunt/node_modules/glob/test/00-setup.js"
+        "C:/Users/Ed/Documents/GitHub/Typescript-Life/node_modules/grunt/node_modules/glob/test/00-setup.js",
+        "C:/Users/Ed/Documents/GitHub/Typescript-Life/node_modules/grunt/node_modules/glob/node_modules/graceful-fs/test/ulimit.js",
+        "C:/Users/Ed/Documents/GitHub/Typescript-Life/gruntfile.js"
     ]
 }
