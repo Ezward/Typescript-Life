@@ -82,7 +82,7 @@
             </section>
             <section>
                 <h4>Building the Dart Version</h4>
-                <p>The dart source code runs directly in the the Dartium browser because it has a native Dart VM.  The html file has a Javascript script that detects if the browser supports Dart natively and runs the dart files.  Of course, most browsers do not have a native Dart VM, but we can use the dart2js compiler to create equivalent Javascript.  From within the life folder, run this command:</p>
+                <p>The dart source code runs directly in the the Dartium browser because it has a native Dart VM.  The html file has a Javascript script that detects if the browser supports Dart natively and runs the dart files.  Of course, most browsers do not have a native Dart VM, but we can use the dart2js compiler to create equivalent Javascript.  From within the life folder, run the dart2js command (note that the example below assumes dart2js is on your path; if it is not then you will need to fully qualify the command.)</p>
                 <p><kbd>dart2js -m -o src/js/life.dart.js src/dart/main.dart</kbd></p>
                 <aside>
                     <h5>Installing Dart SDK</h5>
@@ -109,7 +109,27 @@
                     <p><kbd>npm install -g http-server</kbd></p>
                 </aside>
             </section>
+            <section>
+                <h4>Intializing the Project Dependencies</h4>
+                <p>The project includes an NPM configuration file called package.json.  It includes a section that declares all of the packages that the project needs to build and run.  You can run this from within the root of the project folder to retrieve all the necessary depenancies:</p>
+                <p><kbd>npm install</kbd></p>
+            </section>
+            <section>
+                <h4>Using Grunt</h4>
+                <p>Grunt.js is a task-runner/build-system for JavaScript.  It allows us to run a script to automatically build the components of our app; the script is in the root of the Project folder and is called gruntfile.js.  It can run the Less, TypeScript, and Dart compilers and it is configured to do this whenever a relevant file is saved from our editor.  From within the root of the project folder, type the Grunt command to run the default Grunt task, which will watch all the .less, .ts, and .dart files for changes and rebuild the related .css and .js files as required.  This allows us to simply save our changes in the editor, then refresh the browser window to see the changes live.</p>
+                <p><kbd>grunt</kbd></p>
+                <h5>Installing Grunt</h5>
+                <p>To run the gruntfile.js within the root of the project folder, you will first need to install the Grunt command line, use npm:</p>
+                <p><kbd>npm install -g grunt-cli</kbd></p>
+            </section>
             <footer>Conway's Life in Typescript</footer>
+        </article>
+        <article>
+            <h2>Differences between TypeScript and Dart</h2>
+            <section>
+                <h4>Visibility</h4>
+                <p>Typescript has private and public.  Private methods and properties are completely private to the class so that they are hiddev even from cooperating classes in the same source file. Dart has private, but this operates as 'package' private within a source file.</p>
+            </section>
         </article>
     </main>
     
