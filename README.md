@@ -10,10 +10,6 @@ Create a Population within the world.
 Use a Renderer to draw/animate the Population generations.
 
 
+Open readme.html in a browser for details on now to build and run as well as the generational algorithm.
 
-compile with following command lines from within the src folder:
-
-tsc -t ES5 ts/*.ts --out js/life.js
-
-lessc less/life.less css/life.css
 
