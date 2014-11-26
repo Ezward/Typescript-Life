@@ -11,10 +11,10 @@ abstract class Renderer
      * If the individual is not alive, but was alive, the
      * implementation can decide to draw or erase as desired.
      *
-     * Implements the WorldOfLife.Renderer api.  This 
+     * Implements the WorldOfLife.Renderer api.  This is a 
      * hook that is called repeatedly by Population.render() 
-     * as it iterates over the population in order to draw
-     * the erase the previous generation and draw the current
+     * as it iterates over the population in order to 
+     * erase the previous generation and draw the current
      * generation.
      *
      * @param x the horizontal position of the individual in the World.
@@ -28,7 +28,8 @@ abstract class Renderer
 /**
  * Implementation of an Individual cell in the Life world.
  * This is not exported as part of the module's public
- * api so that we can make addNeighbor() hidden.
+ * api so that we can make addNeighbor() hidden.  This makes the
+ * individual effectively immutable. 
  */
 class _Individual
 {
@@ -94,7 +95,7 @@ class World
      */
     World(int rows, int columns)
     {
-        if((rows <= 0) || (columns <= 0)) throw "World.constructor() was passed non-positive dimensions.";
+        if((rows <= 0) || (columns <= 0)) throw new Error("World.constructor() was passed non-positive dimensions.");
 
         //
         // create the map
