@@ -29,7 +29,7 @@ module.exports = function (grunt) {
                 sourcemap: true
             },
             compile: {
-                src: 'src/ts/main.ts',
+                src: 'src/ts/LifeRunner.ts',
                 out: 'src/js/life.ts.js'
             }
         },

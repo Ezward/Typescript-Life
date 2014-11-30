@@ -389,45 +389,88 @@ var RenderColorLife;
     })();
     RenderColorLife.CanvasRenderer = CanvasRenderer;
 })(RenderColorLife || (RenderColorLife = {}));
-function main() {
+var main;
+(function (main) {
     "use strict";
 
-    var theStage = document.getElementById("stage-canvas");
-    theStage.width = theStage.clientWidth;
-    theStage.height = theStage.clientHeight;
+    var LifeRunner = (function () {
+        function LifeRunner(theCanvas) {
+            var _this = this;
+            this._canvas = null;
+            this._running = false;
+            this._canvas = theCanvas;
+            this._renderer = new RenderSimpleLife.CanvasRenderer(theCanvas);
+            this._animationCallback = function (theTime) {
+                return _this._animationLoop(theTime);
+            };
+        }
+        Object.defineProperty(LifeRunner.prototype, "running", {
+            get: function () {
+                return this._running;
+            },
+            enumerable: true,
+            configurable: true
+        });
 
-    var theMagnification = 4;
-    var theRows = (theStage.height / theMagnification) | 0;
-    var theColumns = (theStage.width / theMagnification) | 0;
-    var theInitialPopulation = ((theRows * theColumns) / 12) | 0;
+        Object.defineProperty(LifeRunner.prototype, "magnification", {
+            get: function () {
+                return this._renderer.magnification;
+            },
+            set: function (theMagnification) {
+                this._renderer.magnification = theMagnification;
+            },
+            enumerable: true,
+            configurable: true
+        });
 
-    var theWorld = new WorldOfLife.World(theRows, theColumns);
-    var thePopulation = new WorldOfLife.Population(theWorld);
+        LifeRunner.prototype.start = function () {
+            if (!this._running) {
+                this._running = true;
+                this._animationLoop(new Date().getTime());
+            }
+            return this;
+        };
 
-    thePopulation.makeAliveXY(1, 0);
-    thePopulation.makeAliveXY(2, 1);
-    thePopulation.makeAliveXY(0, 2);
-    thePopulation.makeAliveXY(1, 2);
-    thePopulation.makeAliveXY(2, 2);
+        LifeRunner.prototype.stop = function () {
+            this._running = false;
+            return this;
+        };
 
-    for (var i = 0; i < theInitialPopulation; i += 1) {
-        thePopulation.makeAliveXY((Math.random() * theColumns) | 0, (Math.random() * theRows) | 0);
-    }
+        LifeRunner.prototype.reset = function () {
+            this.stop();
 
-    var theRenderer = new RenderSimpleLife.CanvasRenderer(theStage);
+            var theStage = this._canvas;
+            theStage.width = theStage.clientWidth;
+            theStage.height = theStage.clientHeight;
+            theStage.getContext("2d").clearRect(0, 0, theStage.width, theStage.height);
 
-    theRenderer.magnification = theMagnification;
+            var theMagnification = this._renderer.magnification;
+            var theRows = (theStage.height / theMagnification) | 0;
+            var theColumns = (theStage.width / theMagnification) | 0;
+            var theInitialPopulation = ((theRows * theColumns) / 12) | 0;
 
-    var theAnimationLoop = function (theTime) {
-        theRenderer.renderFrame(thePopulation);
+            var theWorld = new WorldOfLife.World(theRows, theColumns);
+            var thePopulation = new WorldOfLife.Population(theWorld);
 
-        thePopulation.nextGeneration();
+            for (var i = 0; i < theInitialPopulation; i += 1) {
+                thePopulation.makeAliveXY((Math.random() * theColumns) | 0, (Math.random() * theRows) | 0);
+            }
 
-        window.requestAnimationFrame(theAnimationLoop);
-    };
+            this._population = thePopulation;
+            return this;
+        };
 
-    theAnimationLoop(0);
-}
+        LifeRunner.prototype._animationLoop = function (theTime) {
+            if (this._running) {
+                this._renderer.renderFrame(this._population);
 
-main();
+                this._population.nextGeneration();
+
+                window.requestAnimationFrame(this._animationCallback);
+            }
+        };
+        return LifeRunner;
+    })();
+    main.LifeRunner = LifeRunner;
+})(main || (main = {}));
 //# sourceMappingURL=life.ts.js.map

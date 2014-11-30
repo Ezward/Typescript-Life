@@ -17,6 +17,7 @@
   <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
   <![endif]-->
 
+  <script src="js/life.ts.js"></script>
 	  
 </head>
 
@@ -26,12 +27,32 @@
     <canvas id="stage-canvas">Oops, your browser does not support Html5 Canvas.</canvas>
   </div>
 	
-  <script src="js/life.ts.js"></script>
   <script>
   // prevent elastic overscroll on IOS
     document.body.addEventListener('touchmove', function(event) {
       event.preventDefault();
     }, false);  
+  </script>
+    
+  <script>
+      // start the life simulation
+      var theStage = document.getElementById('stage-canvas');
+      var theRunner = new main.LifeRunner(theStage);
+      
+      //
+      // make it so we can start and stop by just touching the stage canvas
+      //
+      theStage.onclick = function(event) {
+          if(theRunner.running) {
+              theRunner.stop();
+          } else {
+              theRunner.start();
+          }
+      }
+      theStage.ondblclick = function(event) {
+          theRunner.reset().start();
+      }
+      theRunner.reset().start();
   </script>
 </body>
 </html>
