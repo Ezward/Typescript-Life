@@ -35,24 +35,46 @@
   </script>
     
   <script>
-      // start the life simulation
-      var theStage = document.getElementById('stage-canvas');
-      var theRunner = new main.LifeRunner(theStage);
-      
-      //
-      // make it so we can start and stop by just touching the stage canvas
-      //
-      theStage.onclick = function(event) {
+        // start the life simulation
+        var theStage = document.getElementById('stage-canvas');
+        var theRunner = new main.LifeRunner(theStage);
+
+        //
+        // create a R-pentomino in middle of screen
+        //
+        function rPentomino() {
+            //
+            // !!! clear it first to guarantee we have correct dimensions
+            //
+            theRunner.clear();
+            var theLeft = ((theRunner.columns / 2) | 0) - 1;
+            var theTop = ((theRunner.rows / 2) | 0) - 1;
+            
+            theRunner.makeAliveXY(theLeft + 1, theTop + 0)
+                .makeAliveXY(theLeft + 2, theTop + 0)
+                .makeAliveXY(theLeft + 0, theTop + 1)
+                .makeAliveXY(theLeft + 1, theTop + 1)
+                .makeAliveXY(theLeft + 1, theTop + 2)
+                .start()
+                .stop();
+        }
+
+        //
+        // make it so we can start and stop by just touching the stage canvas
+        //
+        theStage.onclick = function(event) {
           if(theRunner.running) {
               theRunner.stop();
           } else {
               theRunner.start();
           }
-      }
-      theStage.ondblclick = function(event) {
-          theRunner.reset().start();
-      }
-      theRunner.reset().start();
+        }
+        theStage.ondblclick = function(event) {
+          // theRunner.reset().start();
+            rPentomino();
+        }
+        //theRunner.reset().start();
+        rPentomino();
   </script>
 </body>
 </html>

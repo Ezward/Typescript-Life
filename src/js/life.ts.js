@@ -423,6 +423,21 @@ var main;
             configurable: true
         });
 
+        Object.defineProperty(LifeRunner.prototype, "columns", {
+            get: function () {
+                return this._world ? this._world.columns : 0;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(LifeRunner.prototype, "rows", {
+            get: function () {
+                return this._world ? this._world.rows : 0;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
         LifeRunner.prototype.start = function () {
             if (!this._running) {
                 this._running = true;
@@ -436,7 +451,7 @@ var main;
             return this;
         };
 
-        LifeRunner.prototype.reset = function () {
+        LifeRunner.prototype.clear = function () {
             this.stop();
 
             var theStage = this._canvas;
@@ -447,16 +462,45 @@ var main;
             var theMagnification = this._renderer.magnification;
             var theRows = (theStage.height / theMagnification) | 0;
             var theColumns = (theStage.width / theMagnification) | 0;
-            var theInitialPopulation = ((theRows * theColumns) / 12) | 0;
 
             var theWorld = new WorldOfLife.World(theRows, theColumns);
             var thePopulation = new WorldOfLife.Population(theWorld);
 
+            this._world = theWorld;
+            this._population = thePopulation;
+            return this;
+        };
+
+        LifeRunner.prototype.reset = function () {
+            this.clear();
+
+            var theRows = this._world.rows;
+            var theColumns = this._world.columns;
+            var thePopulation = this._population;
+
+            var theInitialPopulation = ((theRows * theColumns) / 12) | 0;
             for (var i = 0; i < theInitialPopulation; i += 1) {
                 thePopulation.makeAliveXY((Math.random() * theColumns) | 0, (Math.random() * theRows) | 0);
             }
 
-            this._population = thePopulation;
+            return this;
+        };
+
+        LifeRunner.prototype.isAliveXY = function (x, y) {
+            return this._population.isAliveXY(x, y);
+        };
+
+        LifeRunner.prototype.wasAliveXY = function (x, y) {
+            return this._population.wasAliveXY(x, y);
+        };
+
+        LifeRunner.prototype.makeAliveXY = function (x, y) {
+            this._population.makeAliveXY(x, y);
+            return this;
+        };
+
+        LifeRunner.prototype.makeDeadXY = function (x, y) {
+            this._population.makeDeadXY(x, y);
             return this;
         };
 
