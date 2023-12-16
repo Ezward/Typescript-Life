@@ -14,6 +14,8 @@ Conway's Life is not really a game, it is a cellular automata that, to our eye, 
 
 The fun part is watching as the population evolves; as you watch the world animate you will understand why Conway called this Life.  For a more detailed and visual explanation, see this [video](https://class.coursera.org/modelthinking/lecture/22?s=e) from the University of Michigan.  If you liked that video, you may want to see the [next one](https://class.coursera.org/modelthinking/lecture/23?s=e) in the series which goes into depth on 1D Cellular Automata.  If you are really interested in Cellular Automata, here is an [entry](http://plato.stanford.edu/entries/cellular-automata/) in the Stanford Encyclopedia of Philosophy that talks about 1D Cellular Automata, the Game of Life (2D Cellular Automata) and their signficance to the study of complexity and emergent behavior.
 
+Here is a page that embeds the TypeScript version, http://ezward.github.io/life/life.html.
+
 ## The Code
 1. Construct a World.
 2. Create a Population within the world.
