@@ -8,20 +8,20 @@
 module RenderSimpleLife
 {
     "use strict";
-    
+
 	export class CanvasRenderer implements WorldOfLife.Renderer
 	{
         private _canvas: HTMLCanvasElement;
-        private _context: CanvasRenderingContext2D;
+        private _context: CanvasRenderingContext2D | null;
         private _magnification: number;
-        
+
         constructor(theCanvas: HTMLCanvasElement)
         {
             this._canvas = theCanvas;
             this._context = theCanvas.getContext("2d");
-            this.magnification = 1;
+            this._magnification = 1;
         }
-        
+
         public get magnification() { return this._magnification; }
         public set magnification(magnification: number) { this._magnification = magnification; }
 
@@ -30,7 +30,7 @@ module RenderSimpleLife
          * This will erase the previous generation
          * and draw the current generation
          *
-         * @param thePopulation 
+         * @param thePopulation
          */
         public renderFrame(thePopulation: WorldOfLife.Population) : void
         {
@@ -38,12 +38,12 @@ module RenderSimpleLife
             thePopulation.render(this);
             this.finishRender();
         }
-        
+
         /**
          * Draw (or erase) an individual at the World location.
          *
-         * Implements the WorldOfLife.Renderer api.  This 
-         * hook that is called repeatedly by Population.render() 
+         * Implements the WorldOfLife.Renderer interface.  This
+         * hook that is called repeatedly by Population.render()
          * as it iterates over the population in order to draw
          * the erase the previous generation and draw the current
          * generataion.
@@ -64,7 +64,7 @@ module RenderSimpleLife
                 if (!wasAlive)
                 {
                     // newly born
-                    this._context.fillRect(
+                    this._context?.fillRect(
                         x * this._magnification,
                         y * this._magnification,
                         this._magnification,
@@ -79,7 +79,7 @@ module RenderSimpleLife
                 if (wasAlive)
                 {
                     // newly deceased
-                    this._context.clearRect(
+                    this._context?.clearRect(
                         x * this._magnification,
                         y * this._magnification,
                         this._magnification,
@@ -87,9 +87,9 @@ module RenderSimpleLife
                 }
             }
         }
-        
+
         private _rendering = false;
-        private _fillColor: String;
+        private _fillColor: String = "black";
         private startRender(): void
         {
             if (this._rendering)
@@ -97,13 +97,15 @@ module RenderSimpleLife
                 this.finishRender();
             }
             this._rendering = true;
-            this._context.save();
-            this._context.fillStyle = this._fillColor = "black";
+            if (this._context) {
+                this._context.save();
+                this._context.fillStyle = this._fillColor = "black";
+            }
         }
-        
+
         private finishRender(): void
         {
-            this._context.restore();
+            this._context?.restore();
             this._rendering = false;
         }
 	}

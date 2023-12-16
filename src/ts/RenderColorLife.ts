@@ -11,27 +11,28 @@ module RenderColorLife
 	export class CanvasRenderer implements WorldOfLife.Renderer
 	{
         private _canvas: HTMLCanvasElement;
-        private _context: CanvasRenderingContext2D;
+        private _context: CanvasRenderingContext2D | null;
         private _magnification: number;
         private _rendering = false;
         private _fillColor: string;
-        
+
         constructor(theCanvas: HTMLCanvasElement)
         {
             this._canvas = theCanvas;
             this._context = theCanvas.getContext("2d");
-            this.magnification = 1;
+            this._magnification = 1;
+            this._fillColor = "black";
         }
-        
+
         public get magnification() { return this._magnification; }
         public set magnification(magnification: number) { this._magnification = magnification; }
-        
+
         /**
          * Render a frame for the given population.
          * This will erase the previous generation
          * and draw the current generation
          *
-         * @param thePopulation 
+         * @param thePopulation
          */
         public renderFrame(thePopulation: WorldOfLife.Population): void
         {
@@ -39,12 +40,12 @@ module RenderColorLife
             thePopulation.render(this);
             this.finishRender();
         }
-        
+
         /**
          * Draw (or erase) an individual at the World location.
          *
-         * Implements the WorldOfLife.Renderer api.  This 
-         * hook that is called repeatedly by Population.render() 
+         * Implements the WorldOfLife.Renderer api.  This
+         * hook that is called repeatedly by Population.render()
          * as it iterates over the population in order to draw
          * the erase the previous generation and draw the current
          * generataion.
@@ -81,26 +82,29 @@ module RenderColorLife
                 // changing the color can be expensive, so only do it when color actuall changes
                 if (theFillColor !== this._fillColor)
                 {
-                    this._context.fillStyle = this._fillColor = theFillColor;
+                    this._fillColor = theFillColor;
                 }
-                this._context.fillRect(
-                    x * this._magnification,
-                    y * this._magnification,
-                    this._magnification,
-                    this._magnification);
+                if (this._context) {
+                    this._context.fillStyle = this._fillColor
+                    this._context.fillRect(
+                        x * this._magnification,
+                        y * this._magnification,
+                        this._magnification,
+                        this._magnification);
+                }
             }
             else
             {
                 // this individual has died more than one generation ago
                 // so can just be erased.
-                this._context.clearRect(
+                this._context?.clearRect(
                     x * this._magnification,
                     y * this._magnification,
                     this._magnification,
                     this._magnification);
             }
         }
-        
+
         private startRender(): void
         {
             if (this._rendering)
@@ -108,13 +112,16 @@ module RenderColorLife
                 this.finishRender();
             }
             this._rendering = true;
-            this._context.save();
-            this._context.fillStyle = this._fillColor = "black";
+            this._fillColor = "black"
+            if (this._context) {
+                this._context.save();
+                this._context.fillStyle = this._fillColor;
+            }
         }
-        
+
         private finishRender(): void
         {
-            this._context.restore();
+            this._context?.restore();
             this._rendering = false;
         }
 	}

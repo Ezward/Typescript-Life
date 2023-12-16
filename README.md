@@ -55,65 +55,57 @@ In Dart, it was as simple as making the Individual class hidden by prefixing it 
 
 In TypeScript, I had to use a lot more code and the results are not entirely satisfactory.  TypeScript includes the ability to add a 'private' modifier to a class or method or property.  So my first attempt was to make both the Individual class and the _getIndividualXY() method private.  That did not compile because be when private is applied to a class method, the method become private to just that class and cannot be seen by the rest of the library.  There is currently not way to create a 'library' private method with TypeScript.  So, because _getIndividualXY() must be public, then it's return value, which is an Individual, must be public.  So the only other alternative was to make Individual so that it could not be constructed outside of the library.  I did this by creating a public interface type that exposed methods to get important values, but not to set them.  This exposed another weakness; Typescript does not allow get/set in interfaces.  What I wanted to do was to create an interface that says, "You can read the value of x, you can read the value of y, etc." and use getter syntax to implement that.  However, Typescript does not allow getter syntax in interfaces, so I was forced to implement these as functions.
 
-### Building
+### Installing Build Tools
 
-#### Building the Typescript Version
-Build with Typescript is easy.  We can run the typescript compiler in watch mode.  Whenever any of the typescript source files changes, the compiler will detect it and rebuild the javascript file that is used in the html file.  From within the life folder, run this command:
-
-`  tsc -w -t ES5 --sourcemap src/ts/main.ts --out src/js/life.ts.js`
-
-##### Installing Nodejs
+#### Installing Nodejs
 Both the typescript compiler and the less compiler run using nodejs.  Nodejs is basically Google's V8 Javascript engine packaged to run command line scripts.  Once nodejs is installed, you can install node modules using NPM (commonly referred to as the Node Package Manager).  Nodejs can be installed directly from the project website at [nodejs.org](http://nodejs.org).
 
-##### Installing Typescript
-The typescript compiler runs in nodejs.  First, you need to install node, then you can run this command to install the Typescript compiler:
 
-`  npm install -g typescript`
+#### Intializing the Project Dependencies
+The project includes an NPM configuration file called package.json.  It includes a section that declares all of the packages that the project needs to build and run, including most of the necessary development tools; typescript, less and http-server (the exception is Dart, see [Installing Dart SDK](#installing-dart-sdk) below).  You can run this from within the root of the project folder to retrieve all the necessary depenancies:
 
-#### Building the Dart Version
-The dart source code runs directly in the the Dartium browser because it has a native Dart VM.  The html file has a Javascript script that detects if the browser supports Dart natively and runs the dart files.  Of course, most browsers do not have a native Dart VM, but we can use the dart2js compiler to create equivalent Javascript.  From within the life folder, run the dart2js command (note that the example below assumes dart2js is on your path; if it is not then you will need to fully qualify the command.)
+`npm install`
 
-`  dart2js -m -o src/js/life.dart.js src/dart/main.dart`
+#### Installing Dart SDK
+Find instructions at https://dart.dev/get-dart
 
-##### Installing Dart SDK
-Dart comes with it's own IDE for editing and running dart code.  The IDE distribution also includes the Dart SDK, which includes the dart2js compiler.  You may also download the SDK without the IDE.  You can find instructions for both at [https://www.dartlang.org](https://www.dartlang.org/tools/sdk/)
+#### Installing Dart plugin in Visual Studio Code
+See https://dart.dev/tools/vs-code.
+
+
+### Building
 
 #### Compiling Less Files
 Both the Typescript and the Dart versions share the same css file.  We are using less.js for generating our css files.  This is certainly overkill for this project, but part of my goal for this project was to create a build system that is generally useful for small and large projects.  At this point, I have no good solution for running less in 'watch' mode, so it needs to be run each time the life.less file is changed.  From within the life folder, run this command:
 
-`  lessc src/less/life.less src/css/life.css`
+```
+npx lessc src/less/life.less src/css/life.css
+```
 
-##### Installing Less
-The less compiler runs in nodejs.  First, you need to install node, then you can run this command to install the Less compiler:
+#### Compiling the Typescript Version
+Build with Typescript is easy.  We can run the typescript compiler in watch mode.  Whenever any of the typescript source files changes, the compiler will detect it and rebuild the javascript file that is used in the html file.  From within the root of the project folder, run this command:
 
-`  npm install -g less`
+```
+npx tsc -w ./src/ts/LifeRunner.ts -outFile ./src/js/life.ts.js --sourcemap
+```
 
-#### Running
-We will run in a browser, but first we need to server the page.  I've installed a node script using NPM called http-server that runs a local server on port 8080.  From within the life folder, run this command:
+That will compile the LifeRunner.ts file, which includes the other TypeScript files using `<reference path="<filename>.ts" />` style references.  This makes it very easy to compile this simple project into a single JavaScript file.  For more complicated projects you would likely use EcmaScript modules.
 
-`  http-server src`
+#### Compiling the Dart Version
+We can use the dart to js compiler to create runnable Javascript; see https://dart.dev/tools/dart-compile#js.  From within the life folder, run the dart command (note that the example below assumes dart is on your path; if it is not then you will need to fully qualify the command.)
+
+```
+dart compile js -o src/js/life.dart.js src/dart/main.dart
+```
+
+### Running
+We will run in a browser, but first we need to serve the page.  I've installed a node script using NPM called http-server that runs a local server on port 8080.  From within the life folder, run this command:
+
+```
+npx http-server src
+```
 
 Now you can open a browser to <kbd>http://localhost:8080/life.ts.html</kbd> to view the typescript version and/or <kbd>http://localhost:8080/life.dart.html</kbd> to see the dart version.
-
-##### Installing http-server
-The http-server runs in nodejs.  First, you need to install node, then you can run this command to install  http-server:
-
-`  npm install -g http-server`
-
-#### Intializing the Project Dependencies
-The project includes an NPM configuration file called package.json.  It includes a section that declares all of the packages that the project needs to build and run.  You can run this from within the root of the project folder to retrieve all the necessary depenancies:
-
-`  npm install`
-
-#### Using Grunt
-Grunt.js is a task-runner/build-system for JavaScript.  It allows us to run a script to automatically build the components of our app; the script is in the root of the Project folder and is called gruntfile.js.  It can run the Less, TypeScript, and Dart compilers and it is configured to do this whenever a relevant file is saved from our editor.  From within the root of the project folder, type the Grunt command to run the default Grunt task, which will watch all the .less, .ts, and .dart files for changes and rebuild the related .css and .js files as required.  This allows us to simply save our changes in the editor, then refresh the browser window to see the changes live.
-
-`  grunt`
-
-##### Installing Grunt
-To run the gruntfile.js within the root of the project folder, you will first need to install the Grunt command line, use npm:
-
-`  npm install -g grunt-cli`
 
 
 ## Differences between TypeScript and Dart
@@ -125,7 +117,7 @@ Typescript uses the 'public' and 'private' keywords to control visibility.  Priv
     {
 		...
     }
-        
+
     class IndividualImpl implements Individual
 	{
 		...
@@ -154,11 +146,8 @@ Dart also has private visibility which is implemented by starting the class name
 	    _Individual _getIndividualXY(int x, int y)
 	    {
 			...
-	    }	
+	    }
 	}
 
 
 The 'protected' keyword will be implemented in a near-future release of Typescript, which will eliminate the need for the public interface because we can make _getIndividualXY() protected.  However, I still prefer the Dart method as it handles most common cases very simply.  Also, using the underscore in a name, effectively codifying common usage, makes private visibility clear not only where the class (or method or property) is declared, but also where it is used.
-
-
-
