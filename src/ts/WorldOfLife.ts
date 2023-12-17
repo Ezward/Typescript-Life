@@ -103,32 +103,32 @@ module WorldOfLife
      * api so that we can make addNeighbor() hidden.
      */
     class IndividualImpl implements Individual
-	{
-		private _row : number;
-		private _column : number;
-		private _id: string;
-		private _neighbors : Individual[] = [];
+    {
+        private _row : number;
+        private _column : number;
+        private _id: string;
+        private _neighbors : Individual[] = [];
 
-		public constructor(id: string, row : number, column : number)
-		{
-			if ((row < 0) || (column < 0))
+        public constructor(id: string, row : number, column : number)
+        {
+            if ((row < 0) || (column < 0))
             {
                 throw "Individual.constructor() row or column cannot be negative.";
             }
 
-			this._id = id;
-			this._row = row;
-			this._column = column;
-		}
+            this._id = id;
+            this._row = row;
+            this._column = column;
+        }
 
-		public row(): number { return this._row; }
-		public column(): number { return this._column; }
-		public id(): string { return this._id; }
+        public row(): number { return this._row; }
+        public column(): number { return this._column; }
+        public id(): string { return this._id; }
 
-		public addNeighbor(theNeighbor : Individual): void
-		{
-			this._neighbors.push(theNeighbor);
-		}
+        public addNeighbor(theNeighbor : Individual): void
+        {
+            this._neighbors.push(theNeighbor);
+        }
 
         /**
          * @return the number of neighbors
@@ -145,100 +145,100 @@ module WorldOfLife
          * @return the neighbor
          * @throws if theIndex is out of range
          */
-		public getNeighbor(theIndex : number) : Individual
-		{
-			if ((theIndex < 0) || (theIndex >= this._neighbors.length))
+        public getNeighbor(theIndex : number) : Individual
+        {
+            if ((theIndex < 0) || (theIndex >= this._neighbors.length))
             {
                 throw "Individual.getNeighbor() index is out of range.";
             }
 
-			return this._neighbors[theIndex];
-		}
-	}
+            return this._neighbors[theIndex];
+        }
+    }
 
-	/**
-	 * The world grid, made of rows and columns of Individuals
-	 */
-	export class World
-	{
-		private _rows: number;
-		private _columns : number;
-		private _world: IndividualImpl[][];
+    /**
+     * The world grid, made of rows and columns of Individuals
+     */
+    export class World
+    {
+        private _rows: number;
+        private _columns : number;
+        private _world: IndividualImpl[][];
 
         /**
          * @param rows horizontal size of world
          * @param columns vertical size of world.
          */
         constructor(rows : number, columns : number)
-		{
+        {
             if ((rows <= 0) || (columns <= 0))
             {
                 throw "World.constructor() was passed non-positive dimensions.";
             }
 
-			//
-			// create the map
-			//
-			this._rows = rows;
-			this._columns = columns;
-			this._world = Arrays.newArray2d(rows, columns);
+            //
+            // create the map
+            //
+            this._rows = rows;
+            this._columns = columns;
+            this._world = Arrays.newArray2d(rows, columns);
 
-			//
-			// construct all the individuals
-			//
-			var theId: number = 1;
+            //
+            // construct all the individuals
+            //
+            var theId: number = 1;
             var theRowIndex: number;
             var theColumnIndex: number;
             var theRow: IndividualImpl[];
-			for (theRowIndex = 0; theRowIndex < rows; theRowIndex += 1)
-			{
-				theRow = this._world[theRowIndex];
+            for (theRowIndex = 0; theRowIndex < rows; theRowIndex += 1)
+            {
+                theRow = this._world[theRowIndex];
 
-				for (theColumnIndex = 0; theColumnIndex < columns; theColumnIndex += 1)
-				{
-					theRow[theColumnIndex] = new IndividualImpl(theId.toString(), theRowIndex, theColumnIndex);
-					theId += 1;
-				}
-			}
+                for (theColumnIndex = 0; theColumnIndex < columns; theColumnIndex += 1)
+                {
+                    theRow[theColumnIndex] = new IndividualImpl(theId.toString(), theRowIndex, theColumnIndex);
+                    theId += 1;
+                }
+            }
 
-			// hook up neighbor connections
-			for (theRowIndex = 0; theRowIndex < rows; theRowIndex += 1)
-			{
-				var theAboveRow: IndividualImpl[] = this._world[(rows + theRowIndex - 1) % rows];	// wrap index
-				theRow = this._world[theRowIndex];
-				var theBelowRow: IndividualImpl[] = this._world[(theRowIndex + 1) % rows];			// wrap index
+            // hook up neighbor connections
+            for (theRowIndex = 0; theRowIndex < rows; theRowIndex += 1)
+            {
+                var theAboveRow: IndividualImpl[] = this._world[(rows + theRowIndex - 1) % rows];	// wrap index
+                theRow = this._world[theRowIndex];
+                var theBelowRow: IndividualImpl[] = this._world[(theRowIndex + 1) % rows];			// wrap index
 
-				for (theColumnIndex = 0; theColumnIndex < columns; theColumnIndex += 1)
-				{
-					var theIndividual: IndividualImpl = theRow[theColumnIndex];
-					var theLeftIndex: number = (columns + theColumnIndex - 1) % columns;
-					var theRightIndex: number = (theColumnIndex + 1) % columns;
+                for (theColumnIndex = 0; theColumnIndex < columns; theColumnIndex += 1)
+                {
+                    var theIndividual: IndividualImpl = theRow[theColumnIndex];
+                    var theLeftIndex: number = (columns + theColumnIndex - 1) % columns;
+                    var theRightIndex: number = (theColumnIndex + 1) % columns;
 
-					theIndividual.addNeighbor(theAboveRow[theLeftIndex]);
-					theIndividual.addNeighbor(theAboveRow[theColumnIndex]);
-					theIndividual.addNeighbor(theAboveRow[theRightIndex]);
+                    theIndividual.addNeighbor(theAboveRow[theLeftIndex]);
+                    theIndividual.addNeighbor(theAboveRow[theColumnIndex]);
+                    theIndividual.addNeighbor(theAboveRow[theRightIndex]);
 
-					theIndividual.addNeighbor(theRow[theLeftIndex]);
-					theIndividual.addNeighbor(theRow[theRightIndex]);
+                    theIndividual.addNeighbor(theRow[theLeftIndex]);
+                    theIndividual.addNeighbor(theRow[theRightIndex]);
 
-					theIndividual.addNeighbor(theBelowRow[theLeftIndex]);
-					theIndividual.addNeighbor(theBelowRow[theColumnIndex]);
-					theIndividual.addNeighbor(theBelowRow[theRightIndex]);
-				}
-			}
-		}
+                    theIndividual.addNeighbor(theBelowRow[theLeftIndex]);
+                    theIndividual.addNeighbor(theBelowRow[theColumnIndex]);
+                    theIndividual.addNeighbor(theBelowRow[theRightIndex]);
+                }
+            }
+        }
 
         /**
          * get the number of rows in the World
          * (vertical size of the World).
          */
-		public get rows(): number { return this._rows; }
+        public get rows(): number { return this._rows; }
 
         /**
          * get the number of columns in the World
          * (horizontal size of the World).
          */
-		public get columns(): number { return this._columns; }
+        public get columns(): number { return this._columns; }
 
         /**
          * get an Individual at the given row and column.
@@ -252,24 +252,24 @@ module WorldOfLife
          * @return the Individual at column, row
          * @throws if the row or column is out of range.
          */
-		_getIndividualXY(x: number, y: number): Individual
-		{
-			if ((y < 0) || (y >= this._rows)) { throw "Population.getIndividualXY() row is out of range."; }
-			if ((x < 0) || (x >= this._columns)) { throw "Population.getIndividualXY() column is out of range."; }
-			return this._world[y][x];
-		}
-	}
+        _getIndividualXY(x: number, y: number): Individual
+        {
+            if ((y < 0) || (y >= this._rows)) { throw "Population.getIndividualXY() row is out of range."; }
+            if ((x < 0) || (x >= this._columns)) { throw "Population.getIndividualXY() column is out of range."; }
+            return this._world[y][x];
+        }
+    }
 
-	/**
-	 * An evolving population in the World.
-	 * This is used to make Individuals alive or dead,
-	 * and to evolve the World generation by generation.
-	 */
-	export class Population
-	{
+    /**
+     * An evolving population in the World.
+     * This is used to make Individuals alive or dead,
+     * and to evolve the World generation by generation.
+     */
+    export class Population
+    {
         private _world: World;
-		private _wasAlive: {[id: string]: Individual};      // individuals alive in the previous generation
-		private _isAlive: {[id: string]: Individual};       // individuals alive in the current generation
+        private _wasAlive: {[id: string]: Individual};      // individuals alive in the previous generation
+        private _isAlive: {[id: string]: Individual};       // individuals alive in the current generation
         private _touched: {[id: string]: Individual};       // individuals that need to be drawn in this generation
         private _toRender: {[id: string]: Individual};      // individuals that need to be rendered (erased or drawn)
         private _neighborCount: {[id: string]: number};     // living neighbor count for individuals.
@@ -366,121 +366,121 @@ module WorldOfLife
          * Determine if the given Individual is alive
          * in the current generation.
          */
-		private isAlive(theIndividual: Individual): boolean
-		{
-			return !!(this._isAlive[theIndividual.id()]);
-		}
+        private isAlive(theIndividual: Individual): boolean
+        {
+            return !!(this._isAlive[theIndividual.id()]);
+        }
 
         /**
          * Determine if the given Individual was alive
          * in the previous generation.
          */
-		private wasAlive(theIndividual: Individual): boolean
-		{
-			return !!(this._wasAlive[theIndividual.id()]);
-		}
+        private wasAlive(theIndividual: Individual): boolean
+        {
+            return !!(this._wasAlive[theIndividual.id()]);
+        }
 
         /**
          * Make an Invididual alive in the current generation.
          */
-		private makeAlive(theIndividual: Individual): void
-		{
-			// add to the isAlive collection
+        private makeAlive(theIndividual: Individual): void
+        {
+            // add to the isAlive collection
             var theIndividualId: string = theIndividual.id();
-			this._isAlive[theIndividualId] = theIndividual;	// for quick lookup of active individuals
+            this._isAlive[theIndividualId] = theIndividual;	// for quick lookup of active individuals
             this._touched[theIndividualId] = theIndividual;    // so it is drawn.
             this._toRender[theIndividualId] = theIndividual;    // so it is drawn.
-		}
+        }
 
         /**
          * Make an Invididual dead in the current generation.
          */
-		private makeDead(theIndividual: Individual): void
-		{
-			// remove from the isAlive collection
+        private makeDead(theIndividual: Individual): void
+        {
+            // remove from the isAlive collection
             var theIndividualId: string = theIndividual.id();
-			delete this._isAlive[theIndividualId];
+            delete this._isAlive[theIndividualId];
             this._touched[theIndividualId] = theIndividual;    // so it is drawn.
             this._toRender[theIndividualId] = theIndividual;    // so it is drawn.
-		}
+        }
 
-		/**
-		 * Calculate the next generation using these rules;
-		 *
-		 * Any live individual with fewer than two live neighbours dies, as if caused by under-population.
-		 * Any live individual with two or three live neighbours lives on to the next generation.
-		 * Any live individual with more than three live neighbours dies, as if by overcrowding.
-		 * Any dead individual with exactly three live neighbours becomes a live individual, as if by reproduction.
-		 */
-		public nextGeneration(): void
-		{
-			//
-			// isAlive is now wasAlive.
-			// we will calculate a new alive.
-			// We can use isAlive and wasAlive to decide who was born, who died and who survived.
-			//
-			this._wasAlive = this._isAlive;
+        /**
+         * Calculate the next generation using these rules;
+         *
+         * Any live individual with fewer than two live neighbours dies, as if caused by under-population.
+         * Any live individual with two or three live neighbours lives on to the next generation.
+         * Any live individual with more than three live neighbours dies, as if by overcrowding.
+         * Any dead individual with exactly three live neighbours becomes a live individual, as if by reproduction.
+         */
+        public nextGeneration(): void
+        {
+            //
+            // isAlive is now wasAlive.
+            // we will calculate a new alive.
+            // We can use isAlive and wasAlive to decide who was born, who died and who survived.
+            //
+            this._wasAlive = this._isAlive;
             this._toRender = this._touched; // anything we drew, we need to erase
-			this._isAlive = {};	// pessimistic!
+            this._isAlive = {};	// pessimistic!
             this._touched = {}; // those that must be drawn.
             this._neighborCount = {};   // number of neighbors for each neighbor of alive Invididual
 
 
-			//
-			// loop through all the alive individuals and
-			// tell their neighbors that they are alive.
-			//
+            //
+            // loop through all the alive individuals and
+            // tell their neighbors that they are alive.
+            //
             var theId: string;
-			for (theId in this._wasAlive)
-			{
-				if (this._wasAlive.hasOwnProperty(theId))
-				{
-					var theIndividual: Individual = this._wasAlive[theId];
+            for (theId in this._wasAlive)
+            {
+                if (this._wasAlive.hasOwnProperty(theId))
+                {
+                    var theIndividual: Individual = this._wasAlive[theId];
                     this._touched[theId] = theIndividual;   // will be drawn one way or another
 
 
-					// tell the neighbors that that they have an alive neighbor.
-					for (var j: number = 0; j < 8; j += 1)
-					{
-						var theNeighbor: Individual = theIndividual.getNeighbor(j);
+                    // tell the neighbors that that they have an alive neighbor.
+                    for (var j: number = 0; j < 8; j += 1)
+                    {
+                        var theNeighbor: Individual = theIndividual.getNeighbor(j);
                         var theNeighborId: string = theNeighbor.id();
 
-						//
-						// as the live neighbors count goes up, use the state
-						// to decide if the individual will be alive
-						//
+                        //
+                        // as the live neighbors count goes up, use the state
+                        // to decide if the individual will be alive
+                        //
                         this._neighborCount[theNeighborId] =
                             this._neighborCount.hasOwnProperty(theNeighborId)
                                 ? (this._neighborCount[theNeighborId] + 1)
                                 : 1;
-						switch (this._neighborCount[theNeighborId])
-						{
-							case 2:
-							{
-								// * Any live cell with two or three live neighbours lives on to the next generation.
-								if (this.wasAlive(theNeighbor))
-								{
-									this._isAlive[theNeighborId] = theNeighbor;	// for quick lookup of active individuals
-								}
-								break;
-							}
-							case 3:
-							{
-								// * Any live cell with two or three live neighbours lives on to the next generation.
-								// * Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
-								this._isAlive[theNeighborId] = theNeighbor;	// for quick lookup of active individuals
-								break;
-							}
-							case 4:
-							{
-								// * Any live cell with more than three live neighbours dies, as if by overcrowding.
-								delete this._isAlive[theNeighborId];
-								break;
-							}
-						}
-					}
-				}
-			}
+                        switch (this._neighborCount[theNeighborId])
+                        {
+                            case 2:
+                            {
+                                // * Any live cell with two or three live neighbours lives on to the next generation.
+                                if (this.wasAlive(theNeighbor))
+                                {
+                                    this._isAlive[theNeighborId] = theNeighbor;	// for quick lookup of active individuals
+                                }
+                                break;
+                            }
+                            case 3:
+                            {
+                                // * Any live cell with two or three live neighbours lives on to the next generation.
+                                // * Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+                                this._isAlive[theNeighborId] = theNeighbor;	// for quick lookup of active individuals
+                                break;
+                            }
+                            case 4:
+                            {
+                                // * Any live cell with more than three live neighbours dies, as if by overcrowding.
+                                delete this._isAlive[theNeighborId];
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
 
             //
             // add all living individuals to the draw list
@@ -492,7 +492,7 @@ module WorldOfLife
                     this._toRender[theId] = this._touched[theId] = this._isAlive[theId]; // alive individuals are drawn.
                 }
             }
-		}
+        }
 
         /**
          * Draw the population with the given renderer
@@ -534,6 +534,6 @@ module WorldOfLife
             }
         }
 
-	}
+    }
 
 }

@@ -8,8 +8,8 @@ module RenderColorLife
 {
     "use strict";
 
-	export class CanvasRenderer implements WorldOfLife.Renderer
-	{
+    export class CanvasRenderer implements WorldOfLife.Renderer
+    {
         private _canvas: HTMLCanvasElement;
         private _context: CanvasRenderingContext2D | null;
         private _magnification: number;
@@ -124,5 +124,5 @@ module RenderColorLife
             this._context?.restore();
             this._rendering = false;
         }
-	}
+    }
 }
