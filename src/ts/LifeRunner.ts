@@ -98,17 +98,17 @@ module main
             //
             // get our canvas, synchronize the css size and the canvas coordinate system.
             //
-            var theStage = this._canvas;
+            const theStage = this._canvas;
             theStage.width = theStage.clientWidth;
             theStage.height = theStage.clientHeight;
             theStage.getContext("2d")?.clearRect(0, 0, theStage.width, theStage.height);
 
-            var theMagnification = this._renderer.magnification;
-            var theRows: number = (theStage.height / theMagnification) | 0;
-            var theColumns: number = (theStage.width / theMagnification) | 0;
+            const theMagnification = this._renderer.magnification;
+            const theRows: number = (theStage.height / theMagnification) | 0;
+            const theColumns: number = (theStage.width / theMagnification) | 0;
 
-            var theWorld: WorldOfLife.World = new WorldOfLife.World(theRows, theColumns);
-            var thePopulation: WorldOfLife.Population = new WorldOfLife.Population(theWorld);
+            const theWorld: WorldOfLife.World = new WorldOfLife.World(theRows, theColumns);
+            const thePopulation: WorldOfLife.Population = new WorldOfLife.Population(theWorld);
 
             this._world = theWorld;
             this._population = thePopulation;
@@ -123,15 +123,15 @@ module main
         {
             this.clear();
 
-            var theRows: number = this._world.rows;
-            var theColumns: number = this._world.columns;
-            var thePopulation: WorldOfLife.Population = this._population;
+            const theRows: number = this._world.rows;
+            const theColumns: number = this._world.columns;
+            const thePopulation: WorldOfLife.Population = this._population;
 
             //
             // create random pattern
             //
-            var theInitialPopulation: number = ((theRows * theColumns) / 12) | 0;
-            for (var i: number = 0; i < theInitialPopulation; i += 1)
+            const theInitialPopulation: number = ((theRows * theColumns) / 12) | 0;
+            for (let i: number = 0; i < theInitialPopulation; i += 1)
             {
                 thePopulation.makeAliveXY((Math.random() * theColumns) | 0, (Math.random() * theRows) | 0);
             }

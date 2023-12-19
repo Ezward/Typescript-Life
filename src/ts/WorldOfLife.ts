@@ -186,15 +186,11 @@ module WorldOfLife
             //
             // construct all the individuals
             //
-            var theId: number = 1;
-            var theRowIndex: number;
-            var theColumnIndex: number;
-            var theRow: IndividualImpl[];
-            for (theRowIndex = 0; theRowIndex < rows; theRowIndex += 1)
+            for (let theRowIndex = 0, theId = 1; theRowIndex < rows; theRowIndex += 1)
             {
-                theRow = this._world[theRowIndex];
+                const theRow = this._world[theRowIndex];
 
-                for (theColumnIndex = 0; theColumnIndex < columns; theColumnIndex += 1)
+                for (let theColumnIndex = 0; theColumnIndex < columns; theColumnIndex += 1)
                 {
                     theRow[theColumnIndex] = new IndividualImpl(theId.toString(), theRowIndex, theColumnIndex);
                     theId += 1;
@@ -202,17 +198,17 @@ module WorldOfLife
             }
 
             // hook up neighbor connections
-            for (theRowIndex = 0; theRowIndex < rows; theRowIndex += 1)
+            for (let theRowIndex = 0; theRowIndex < rows; theRowIndex += 1)
             {
-                var theAboveRow: IndividualImpl[] = this._world[(rows + theRowIndex - 1) % rows];	// wrap index
-                theRow = this._world[theRowIndex];
-                var theBelowRow: IndividualImpl[] = this._world[(theRowIndex + 1) % rows];			// wrap index
+                const theAboveRow: IndividualImpl[] = this._world[(rows + theRowIndex - 1) % rows];	// wrap index
+                const theRow = this._world[theRowIndex];
+                const theBelowRow: IndividualImpl[] = this._world[(theRowIndex + 1) % rows];			// wrap index
 
-                for (theColumnIndex = 0; theColumnIndex < columns; theColumnIndex += 1)
+                for (let theColumnIndex = 0; theColumnIndex < columns; theColumnIndex += 1)
                 {
-                    var theIndividual: IndividualImpl = theRow[theColumnIndex];
-                    var theLeftIndex: number = (columns + theColumnIndex - 1) % columns;
-                    var theRightIndex: number = (theColumnIndex + 1) % columns;
+                    const theIndividual: IndividualImpl = theRow[theColumnIndex];
+                    const theLeftIndex: number = (columns + theColumnIndex - 1) % columns;
+                    const theRightIndex: number = (theColumnIndex + 1) % columns;
 
                     theIndividual.addNeighbor(theAboveRow[theLeftIndex]);
                     theIndividual.addNeighbor(theAboveRow[theColumnIndex]);
@@ -301,7 +297,7 @@ module WorldOfLife
          */
         public isAliveXY(x: number, y: number): boolean
         {
-            var theIndividual: Individual = this._world._getIndividualXY(x, y);
+            const theIndividual: Individual = this._world._getIndividualXY(x, y);
             if (!!theIndividual)
             {
                 return this.isAlive(theIndividual);
@@ -320,7 +316,7 @@ module WorldOfLife
          */
         public wasAliveXY(x: number, y: number): boolean
         {
-            var theIndividual: Individual = this._world._getIndividualXY(x, y);
+            const theIndividual: Individual = this._world._getIndividualXY(x, y);
             if (!!theIndividual)
             {
                 return this.wasAlive(theIndividual);
@@ -338,7 +334,7 @@ module WorldOfLife
          */
         public makeAliveXY(x: number, y: number): void
         {
-            var theIndividual: Individual = this._world._getIndividualXY(x, y);
+            const theIndividual: Individual = this._world._getIndividualXY(x, y);
             if (!!theIndividual)
             {
                 this.makeAlive(theIndividual);
@@ -355,7 +351,7 @@ module WorldOfLife
          */
         public makeDeadXY(x: number, y: number): void
         {
-            var theIndividual: Individual = this._world._getIndividualXY(x, y);
+            const theIndividual: Individual = this._world._getIndividualXY(x, y);
             if (!!theIndividual)
             {
                 this.makeDead(theIndividual);
@@ -386,7 +382,7 @@ module WorldOfLife
         private makeAlive(theIndividual: Individual): void
         {
             // add to the isAlive collection
-            var theIndividualId: string = theIndividual.id();
+            const theIndividualId: string = theIndividual.id();
             this._isAlive[theIndividualId] = theIndividual;	// for quick lookup of active individuals
             this._touched[theIndividualId] = theIndividual;    // so it is drawn.
             this._toRender[theIndividualId] = theIndividual;    // so it is drawn.
@@ -398,7 +394,7 @@ module WorldOfLife
         private makeDead(theIndividual: Individual): void
         {
             // remove from the isAlive collection
-            var theIndividualId: string = theIndividual.id();
+            const theIndividualId: string = theIndividual.id();
             delete this._isAlive[theIndividualId];
             this._touched[theIndividualId] = theIndividual;    // so it is drawn.
             this._toRender[theIndividualId] = theIndividual;    // so it is drawn.
@@ -430,20 +426,19 @@ module WorldOfLife
             // loop through all the alive individuals and
             // tell their neighbors that they are alive.
             //
-            var theId: string;
-            for (theId in this._wasAlive)
+            for (let theId in this._wasAlive)
             {
                 if (this._wasAlive.hasOwnProperty(theId))
                 {
-                    var theIndividual: Individual = this._wasAlive[theId];
+                    const theIndividual: Individual = this._wasAlive[theId];
                     this._touched[theId] = theIndividual;   // will be drawn one way or another
 
 
                     // tell the neighbors that that they have an alive neighbor.
-                    for (var j: number = 0; j < 8; j += 1)
+                    for (let j: number = 0; j < 8; j += 1)
                     {
-                        var theNeighbor: Individual = theIndividual.getNeighbor(j);
-                        var theNeighborId: string = theNeighbor.id();
+                        const theNeighbor: Individual = theIndividual.getNeighbor(j);
+                        const theNeighborId: string = theNeighbor.id();
 
                         //
                         // as the live neighbors count goes up, use the state
@@ -485,7 +480,7 @@ module WorldOfLife
             //
             // add all living individuals to the draw list
             //
-            for (theId in this._isAlive)
+            for (let theId in this._isAlive)
             {
                 if (this._isAlive.hasOwnProperty(theId))
                 {
@@ -501,12 +496,11 @@ module WorldOfLife
          */
         public render(theRenderer: Renderer): void
         {
-            var theId: string;
-            for (theId in this._toRender)
+            for (let theId in this._toRender)
             {
                 if (this._toRender.hasOwnProperty(theId))
                 {
-                    var theIndividual: Individual = this._toRender[theId];
+                    const theIndividual: Individual = this._toRender[theId];
                     theRenderer.renderIndividual(
                         theIndividual.column(),
                         theIndividual.row(),
@@ -523,12 +517,11 @@ module WorldOfLife
          */
         public erase(theRenderer: Renderer): void
         {
-            var theId: string;
-            for (theId in this._toRender)
+            for (let theId in this._toRender)
             {
                 if (this._toRender.hasOwnProperty(theId))
                 {
-                    var theIndividual: Individual = this._toRender[theId];
+                    const theIndividual: Individual = this._toRender[theId];
                     theRenderer.renderIndividual(theIndividual.column(), theIndividual.row(), false, false);
                 }
             }
