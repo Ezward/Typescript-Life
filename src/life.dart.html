@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-  
+
   <title>Conway's Game of Life in Typescript</title>
   <meta name="description" content="Conway's Game of Life in Typescript">
   <meta name="author" content="Ezward">
@@ -18,7 +18,7 @@
   <![endif]-->
   <script>
     var com = com || {};
-    com.lumpofcode = com.lumpofcode || {};  
+    com.lumpofcode = com.lumpofcode || {};
     com.lumpofcode.loadScript = function (theFileName, theFileType) {
      var theScriptTag = document.createElement('script');
      if (typeof theScriptTag != "undefined") {
@@ -29,15 +29,15 @@
     }
   </script>
 
-	  
+
 </head>
 
 <body>
-	
+
   <div id="stage-container">
     <canvas id="stage-canvas">Oops, your browser does not support Html5 Canvas.</canvas>
   </div>
-	
+
   <!-- script to choose either .dart or .js implementation -->
   <!--  <script type="application/dart" src="dart/main.dart"></script>-->
   <!--  <script src="js/dartlife.js"></script>-->
@@ -52,12 +52,12 @@
       }
     }, false);
   </script>
-    
+
   <script>
   // prevent elastic overscroll on IOS
     document.body.addEventListener('touchmove', function(event) {
       event.preventDefault();
-    }, false);  
+    }, false);
   </script>
 </body>
 </html>

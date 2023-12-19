@@ -1,0 +1,241 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+    <title>Conway's Game of Life in Typescript and Dart</title>
+    <meta name="description" content="Conway's Game of Life in Typescript and Dart">
+    <meta name="author" content="Ezward">
+
+    <script>
+        // requestAnimFrame shim  with setTimeout fallback
+        window.requestAnimationFrame = (function () {
+            return window.requestAnimationFrame ||
+                    window.webkitRequestAnimationFrame ||
+                    window.mozRequestAnimationFrame ||
+                    window.oRequestAnimationFrame ||
+                    window.msRequestAnimationFrame ||
+                    function (callback) {
+                        window.setTimeout(callback, 1000 / 60);
+                    };
+        })();
+    </script>
+
+    <style>
+        #stage-container {
+            height: 20rem;
+            border: black solid 2px;
+            margin-top: 2rem;
+            margin-left: 0.5rem;
+            margin-right: 0.5rem;
+        }
+        #stage-container canvas {
+        width: 100%;
+        height: 100%;
+        }
+        #playerbuttons {
+            /* width:100%, text-align:center centers the buttons */
+            width: 100%;
+            text-align: center;
+
+            margin-top: 2px;
+            margin-bottom: 1rem;
+        }
+        #play {
+            width: 5em;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://ezward.github.io/ezward.css">
+    <script src="src/js/life.ts.js"></script>
+</head>
+
+<body>
+    <div class="masthead">
+        <p>Ezward on GitHub</p>
+        <a href="http://ezward.github.io/" class="home">home</a>
+    </div>
+
+    <main class="main-content">
+        <!-- Use h1 for article name: should match <title/> for SEO -->
+        <h1>Conway's Game of Life in TypeScript and Dart</h1>
+        <ul>
+            <li><a href="src/life.ts.html">TypeScript version</a></li>
+            <li><a href="src/life.dart.html">Dart version</a></li>
+        </ul>
+
+        <aside>
+            <span>Contents</span>
+            <nav>
+                <a href="#introduction">The Game</a>
+                <a href="#world">The World</a>
+                <a href="#algorithm">The Algorithm</a>
+                <a href="#differences">Differences between TypeScript and Dart</a>
+                <a href="#project">The Project</a>
+            </nav>
+        </aside>
+
+        <section id="introduction">
+            <div class="row">
+                <div class="column">
+                    <a name="introduction"><h3>The Game</h3></a>
+                    <p>Conway's Life is not really a game, it is a cellular automata that, to our eye, simulates the evolution of a population.  So there are no 'moves' that are made.  Instead, the board (or the world) is populated, then the rules are applied to create a new population.  This is done over and over again so that the population evolves.  Even though the rules are simple, the result can be amazingly complex and interesting.</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="double column">
+                    <h4>The rules of Life <cite><small>(adapted from <a href="http://en.wikipedia.org/wiki/Conway's_Game_of_Life">Wikipedia</a>)</small></cite></h4>
+                    <ul>
+                        <li>Any live individual with fewer than two live neighbors dies, as if caused by under-population.</li>
+                        <li>Any live individual with two or three live neighbors lives on to the next generation.</li>
+                        <li>Any live individual with more than three live neighbors dies, as if by overcrowding.</li>
+                        <li>Any dead individual with exactly three live neighbors becomes a live individual, as if by reproduction.</li>
+                    </ul>
+                </div>
+                <div id="lifeplayer" class="double column">
+                    <!-- an instance of the simulation -->
+                    <div id="stage-container">
+                        <canvas id="stage-canvas">Oops, your browser does not support Html5 Canvas.</canvas>
+                    </div>
+                    <div id="playerbuttons">
+                        <button id="step">Step</button>
+                        <button id="play">Play</button>
+                        <button id="restart">Random</button>
+                        <button id="rpentomino">R-pentomino</button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <p>The fun part is watching as the population evolves; as you watch the world animate you will understand why Conway called this Life.  For a more detailed and visual explanation, see this <a href="https://class.coursera.org/modelthinking/lecture/22?s=e" target="_blank">video</a> from the University of Michigan.  If you liked that video, you may want to see the <a href="https://class.coursera.org/modelthinking/lecture/23?s=e" target="_blank">next one</a> in the series which goes into depth on 1D Cellular Automata.  If you are really interested in Cellular Automata, here is an <a href="http://plato.stanford.edu/entries/cellular-automata/"  target="_blank">entry</a> in the Stanford Encyclopedia of Philosophy that talks about 1D Cellular Automata, the Game of Life (2D Cellular Automata) and their significance to the study of complexity and emergent behavior.</p>
+             </div>
+        </section>
+
+        <section>
+            <h3>Data Structures</h3>
+            <section>
+                <a name="world"><h4>The World</h4></a>
+                <p>Life is 'played' on a rectangular field, which we can call the world.  Each (x,y) location in the world can be thought of as a place that an individual occupies.  Sometimes this is called a cell; the cellular part of cellular automata.  An individual may be alive or dead.  The alive individuals make up a population.</p>
+                <p>The world is created with a set number of rows and columns.  At construction, an individual is allocated for each (x,y) location.  Each individual also has a list of it's neighboring individuals, which we build after all the individuals have been created.  Each individual has 8 neighbors; think of a tick-tack-toe board with an 'o' in the middle and x's in all the other spots - the x's are the neighbors.  The neighbor lists are constructed in such a way that that the rectangular world is treated as a torus; the top edge is continuous with the bottom edge and the left edge is continuous with the right edge.   If we did not do this, then individuals at the edges would not have the same number of neighbors as the individuals in the center and so the rules for calculating the next generation would break down at the edges.</p>
+                <aside>A <a href="http://en.wikipedia.org/wiki/Torus">torus</a> looks like a donut or a bagel.  Would you rather live on a donut or a bagel?</aside>
+            </section>
+            <section>
+                <h4>The Population</h4>
+                <p>The most important part of Life is how it changes from generation to generation.  That is handled with a population.  A population is a list of living individuals in a world.  Initially, the program sets individuals into the population using their (x,y) position in the world.  After this initial population is created, the next generation can be calculation use the Population.nextGeneration() method.  That will apply the rules of Life to the current population to calculate the set of alive individuals.  In so doing, it also records which individuals from the current population survived, which died and which individuals were newly born into the new generation.</p>
+                <aside>Although it is uncommon, a world can have more than one population.  The populations are distinct and do not interact.</aside>
+            </section>
+            <section>
+                <h4>Drawing</h4>
+                <p>Of course, we want to be able to watch all of these changes; that's the fun part.  To draw the population, we use a renderer. Formally, the renderer is an interface the separates the details of drawing from the details of the world, the population and the individuals.  This is an important part of the design; it allows the population to be drawn using any technology or library.  The drawing code simply implements the Renderer.renderIndividual() method and passes the resulting renderer to Population.render().  Population.render() does two things; it first erases the previous generation, then draws the new generation by calling Renderer.renderIndividual() for all Individuals whose state changes (either by dying or being born).  If we continually loop, creating a new generation and drawing it on each iteration, then we can animate the evolution of the population.</p>
+            </section>
+        </section>
+
+        <section>
+            <a name="algorithm"><h3>The Algorithm</h3></a>
+            <p>A very straightforward way to implement the rules of life would be to visit each (x,y) location in the world and then, at each location, 'ask' all 8 neighbors if they are alive and apply the rules to figure out if that location is born, survives, or dies.  Let's think about how much work this is.  If we have a 10 x 10 world, then we have 100 locations.  So we visit each location, that is 100 locations, then at each location, we visit each neighbor, so that is another 8x100 or 800 locations.  So for a 100 location world, we make 900 location visits.  So the work is 9 times the number of locations.</p>
+            <p>Let's think bigger; how about a 1000 x 1000 World?  That's 1,000,000 locations.  So, we know that we need to visit each location and it's 8 neighbors, so we will need to make 9,000,000 visits to create each generation.  As you can see, that is a lot of work.  That is especially problematic if you want to see the population animate as it evolves.  We are doing so much work to create the next generation that he animation will be very slow and unsatisfying.</p>
+            <section>
+                <h4>A Faster Way</h4>
+                <p>The good news is that we can do a lot better by recognizing a couple of things.  First, only live individuals and their immediate neighbors are important in the next generation.  This is because the only way to stay alive or become alive is to have live neighbors, so the live individuals are the important ones.  Second, we can see that once Life progresses past the initial population, then the number of live individuals is much smaller than the number of dead individuals.  In fact, most of the world becomes a vast array of dead individuals and most of those dead individuals have only dead individuals for neighbors.  Because of the rules of Life, we know that a dead individual with all dead neighbors stays dead (there are no zombies in Conway's Life).  So the key to speeding up the evolution of the population is to focus on live individuals and their neighbors and ignore everything else.  Another way to put this is that we should focus on the population rather than the whole world.</p>
+                <p>The algorithm that we will use does a couple things to speed things up.  First, we keep a list of live individuals and rather than visit every location we only visit live individuals and their direct neighbors. Next, rather than visit a location and 'asking' how many live neighbors it as, we use the list of live individuals and then tell their neighbors they have a live neighbor.  The neighbor then keeps track of whether it should be alive or dead as it's live neighbors check in.</p>
+                <p>For each live individual, we visit it's 8 neighbors to tell each of them that they have a live neighbor.  The work we have to do is still 9xN, but now N is the number of live individuals, which is a small subset of the entire world.  Those locations that are not alive and have no live neighbors, which is most locations, are never visited; they take no work.</p>
+            </section>
+        </section>
+
+        <section>
+            <a name="differences"><h3>Differences between TypeScript and Dart</h3></a>
+            <p>The project's <a href="https://github.com/Ezward/Typescript-Life">readme</a> has more information how to build the applications.  You can find the project <a href="https://github.com/Ezward/Typescript-Life">here</a>.  There is a Typescript version and an equivalent Dart version.  Each of them provide a World class, a Population class and an Renderer interface.  Each also implements a Renderer that draws on a canvas element.  Finally, each has a Main that sets up the World and the Population, then animates the change in generations.</p>
+            <p>The public api treats each location in the world as an (x,y) coordinate.  The Individual object at each (x,y) location does not need to be part of the public api.  In fact, it should not be part of the public API because that would allow users of the library to construct Individuals; there is no reason to construct Individuals and it is potentially harmful, so we want to prevent it.  The problem is that the World class has a method called _getIndividualXY() that returns an Individual.  That method is used by the Population class, so it needs to be visible within the library, but not visible to users of the library.  This was accomplished differently in TypeScript than in Dart.</p>
+            <p>In Dart, it was as simple as making the Individual class hidden by prefixing it with an underscore. In Dart, this makes the class (or method or property) private to the library.  That is, it cannot be seen outside of the library, but it is visible to everything in the library.  This turned out to be perfect for my case.  Of course, each place that it is used needs to use the underscored name, but that is part of the Dart system that I have actually adopted in my other programming because it makes it clear at the point of usage that it is private.</p>
+            <p> In TypeScript, I had to use a lot more code and the results are not entirely satisfactory.  TypeScript includes the ability to add a 'private' modifier to a class or method or property.  So my first attempt was to make both the Individual class and the _getIndividualXY() method private.  That did not compile because be when private is applied to a class method, the method becomes private to just that class and cannot be seen by the rest of the library.  There is currently no way to create a 'library' private method with TypeScript.  So, because _getIndividualXY() must be public, then it's return value, which is an Individual, must be public.  So the only other alternative was to make Individual so that it could not be constructed outside of the library.  I did this by creating a public interface type that exposed methods to get important values, but not to set them.  This exposed another weakness; Typescript does not allow get/set in interfaces.  What I wanted to do was to create an interface that says, "You can read the value of x, you can read the value of y, etc." and use getter syntax to implement that.  However, Typescript does not allow getter syntax in interfaces, so I was forced to implement these as functions.</p>
+            <p>The 'protected' keyword will be implemented in a near-future release of Typescript, which will eliminate the need for the public interface because we can make _getIndividualXY() protected.  However, I still prefer the Dart method as it handles most common cases very simply.  Also, using the underscore in a name, effectively codifying common usage, makes private visibility clear not only where the class (or method or property) is declared, but also where it is used.</p>
+            <p>A really important difference between TypeScript and Dart is the ability to interoperate with on-page JavaScript and other JavaScript libraries.  Here is an <a href="http://lumpofcode.blogspot.com/2012/10/typescript-dart-google-web-toolkit-and.html">article</a> I wrote a while back comparing Dart, TypeScript and GWT and their ability to integrate with JavaScript (spoiler, TypeScript is really good, GWT is good, Dart is not good.) and how to handle 'this' in TypeScript.  TypeScript produces excellent idiomatic and interoperable JavaScript.  So, with TypeScript I can create nice JavaScript that can easily be integrated with other JavaScript on the page.  That is how this page was created.  The Life engine on the page is the version written in TypeScript.  I have it packaged as a module with a clean api that I can call from JavaScript.  I use a little bit of JavaScript in the page to hook-up actions to the buttons to control the Life engine.  It works really well and does a good job separating the concerns of the business logic and hooking up UI.  The Dart version would not have been nearly so easy to integrate.  I would have had to write all the UI code in Dart and deploy that to the page; that means each time I wanted to use the Dart Life engine, I would have to go back to the Dart project, rather than just edit some JavaScript on the page.  So I would have had to mix those two concerns in order to use Dart.  That may change in the future now that Dart has given up on providing it's own VM in the browser and is focused on producing JavaScript output.</p>
+        </section>
+        <section>
+            <a name="project"><h3>The Project</h3></a>
+            <p>The project can be found <a href="https://github.com/Ezward/Typescript-Life">here</a>.</p>
+        </section>
+        <footer>
+            <aside>
+                <small>Copyright (c) 2023.  This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License. To view a copy of this license, visit <a href="http://creativecommons.org/licenses/by-sa/4.0/">http://creativecommons.org/licenses/by-sa/4.0/</a></small>
+            </aside>
+        </footer>
+        <script>
+            // start the life simulation
+            var theStage = document.getElementById('stage-canvas');
+            var theRunner = new main.LifeRunner(theStage);
+            theRunner.magnification = 2;
+
+            //
+            // create a R-pentomino in middle of screen
+            //
+            function rPentomino() {
+                //
+                // !!! clear it first to guarantee we have correct dimensions
+                //
+                theRunner.clear();
+                var theLeft = ((theRunner.columns / 2) | 0) - 1;
+                var theTop = ((theRunner.rows / 2) | 0) - 1;
+
+                theRunner.makeAliveXY(theLeft + 1, theTop + 0)
+                    .makeAliveXY(theLeft + 2, theTop + 0)
+                    .makeAliveXY(theLeft + 0, theTop + 1)
+                    .makeAliveXY(theLeft + 1, theTop + 1)
+                    .makeAliveXY(theLeft + 1, theTop + 2)
+                    .start()
+                    .stop();
+            }
+
+            //
+            // make it so we can start and stop by just touching the stage canvas
+            //
+            var toggleRunner = function() {
+                if(theRunner.running) {
+                    theRunner.stop();
+                    document.getElementById('play').textContent = "Play";
+                } else {
+                    theRunner.start();
+                    document.getElementById('play').textContent = "Pause";
+                }
+            }
+
+            var clickToggle = function(event) { toggleRunner(); }
+            theStage.onclick = clickToggle;
+
+            //
+            // buttons
+            //
+            document.getElementById('play').onclick = clickToggle;
+
+            document.getElementById('step').onclick = function(event) {
+                if(theRunner.running) {
+                    toggleRunner(); // stop running
+                } else {
+                    theRunner.start().stop(); // run one step
+                }
+            }
+            document.getElementById('restart').onclick = function(event) {
+                // run one frame then stop
+                theRunner.reset().start().stop();
+                document.getElementById('play').textContent = "Play";
+
+            }
+            document.getElementById('rpentomino').onclick = function(event) {
+                // run one frame then stop
+                rPentomino();
+                document.getElementById('play').textContent = "Play";
+
+            }
+
+            //
+            // init; run one frame and stop.
+            //
+            theRunner.reset().start().stop();
+
+        </script>
+    </main>
+</body>
+</html>

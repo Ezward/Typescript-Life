@@ -497,10 +497,10 @@ var RenderColorLife;
                 let theFillColor = this._fillColor;
                 if (isAlive) {
                     if (wasAlive) {
-                        theFillColor = "black"; // survival
+                        theFillColor = "blue"; // survival
                     }
                     else {
-                        theFillColor = "green"; // birth
+                        theFillColor = "yellow"; // birth
                     }
                 }
                 else if (wasAlive) {
