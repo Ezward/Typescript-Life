@@ -67,16 +67,16 @@ module RenderColorLife
                 {
                     if (wasAlive)
                     {
-                        theFillColor = "black"; // survival
+                        theFillColor = "blue";   // survival
                     }
                     else
                     {
-                        theFillColor = "green"; // birth
+                        theFillColor = "yellow"; // birth
                     }
                 }
                 else if (wasAlive)
                 {
-                    theFillColor = "red";       // death
+                    theFillColor = "red";        // death
                 }
 
                 // changing the color can be expensive, so only do it when color actuall changes
