@@ -62,7 +62,7 @@ module RenderColorLife
                 //
                 // we use different colors for survival, birth and death
                 //
-                var theFillColor: string = this._fillColor;
+                let theFillColor: string = this._fillColor;
                 if (isAlive)
                 {
                     if (wasAlive)

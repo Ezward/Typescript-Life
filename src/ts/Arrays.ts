@@ -6,8 +6,8 @@ module Arrays
     {
         if ((rows <= 0) || (columns <= 0)) { throw "newArray2d() passed non-positive array size."; }
 
-        var theArray: any[][] = new Array(rows);
-        for (var i: number = 0; i < rows; i += 1)
+        const theArray: any[][] = new Array(rows);
+        for (let i: number = 0; i < rows; i += 1)
         {
             theArray[i] = new Array(columns);
         }
